@@ -658,6 +658,44 @@
   تم تجهيز الطلب بنجاح
 </div>
 
+  <!-- KIVRA ADMIN -->
+<section id="adminPanel" class="admin-panel" style="display:none;">
+  <div class="admin-header">
+    <h2>إدارة KIVRA</h2>
+    <button id="closeAdmin" type="button">×</button>
+  </div>
+
+  <div class="admin-box">
+    <h3>إضافة كفر جديد</h3>
+
+    <label>اسم الكفر</label>
+    <input id="adminName" type="text" placeholder="مثال: كفر شفاف">
+
+    <label>السعر</label>
+    <input id="adminPrice" type="number" placeholder="مثال: 35">
+
+    <label>الموديلات</label>
+    <input id="adminPhones" type="text"
+      placeholder="iPhone 15, iPhone 15 Pro, iPhone 16">
+
+    <label>الألوان</label>
+    <input id="adminColors" type="text"
+      placeholder="أسود, أبيض, أزرق">
+
+    <label>الوصف</label>
+    <textarea id="adminDescription"
+      placeholder="وصف الكفر"></textarea>
+
+    <label>صور الكفر</label>
+    <input id="adminImages" type="file" accept="image/*" multiple>
+
+    <button id="addProductBtn" class="primary-btn" type="button">
+      إضافة الكفر
+    </button>
+
+    <p id="adminMessage"></p>
+  </div>
+</section>
 
 <script src="script.js"></script>
 
