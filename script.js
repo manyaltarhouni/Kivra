@@ -1585,4 +1585,97 @@ function escapeHTML(value) {
 
 renderCart();
 
-updateCartCount();
+updateCartCount();                                          
+/* =========================================================
+   KIVRA ADMIN - ADD PRODUCTS
+   ========================================================= */
+
+const adminPanel = document.querySelector("#adminPanel");
+const addProductBtn = document.querySelector("#addProductBtn");
+const adminMessage = document.querySelector("#adminMessage");
+
+async function addKivraProduct() {
+
+  if (!supabase) {
+    alert("قاعدة البيانات غير متصلة.");
+    return;
+  }
+
+  const name = document.querySelector("#adminName").value.trim();
+  const price = Number(document.querySelector("#adminPrice").value);
+  const phonesText = document.querySelector("#adminPhones").value.trim();
+  const colorsText = document.querySelector("#adminColors").value.trim();
+  const description = document.querySelector("#adminDescription").value.trim();
+  const images = document.querySelector("#adminImages").files;
+
+  if (!name || !price || !phonesText || !colorsText || !images.length) {
+    adminMessage.textContent = "يرجى إدخال الاسم والسعر والموديلات والألوان والصور.";
+    return;
+  }
+
+  adminMessage.textContent = "جاري إضافة الكفر...";
+
+  const phones = phonesText.split(",").map(x => x.trim()).filter(Boolean);
+  const colors = colorsText.split(",").map(x => x.trim()).filter(Boolean);
+
+  let imageUrl = "";
+
+  const file = images[0];
+
+  const fileName =
+    `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "")}`;
+
+  const { error: uploadError } =
+    await supabase.storage
+      .from("kivra-images")
+      .upload(fileName, file);
+
+  if (uploadError) {
+    console.error(uploadError);
+    adminMessage.textContent = "حدث خطأ أثناء رفع الصورة.";
+    return;
+  }
+
+  const { data: publicData } =
+    supabase.storage
+      .from("kivra-images")
+      .getPublicUrl(fileName);
+
+  imageUrl = publicData.publicUrl;
+
+  const { error } =
+    await supabase
+      .from("products")
+      .insert({
+        name,
+        price,
+        phones,
+        colors,
+        description,
+        image_url: imageUrl,
+        collection: "iPhone",
+        theme: "black",
+        active: true
+      });
+
+  if (error) {
+    console.error(error);
+    adminMessage.textContent = "حدث خطأ أثناء إضافة الكفر.";
+    return;
+  }
+
+  adminMessage.textContent = "تمت إضافة الكفر بنجاح ✅";
+
+  document.querySelector("#adminName").value = "";
+  document.querySelector("#adminPrice").value = "";
+  document.querySelector("#adminPhones").value = "";
+  document.querySelector("#adminColors").value = "";
+  document.querySelector("#adminDescription").value = "";
+  document.querySelector("#adminImages").value = "";
+}
+
+if (addProductBtn) {
+  addProductBtn.addEventListener("click", addKivraProduct);
+}
+
+
