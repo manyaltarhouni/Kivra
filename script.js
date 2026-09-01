@@ -1,11 +1,10 @@
 /* =========================================================
-   KIVRA STORE
-   DATABASE VERSION
+   KIVRA STORE — FINAL JAVASCRIPT
    ========================================================= */
 
-/* =========================================================
+/* =========================
    SUPABASE CONFIG
-   ========================================================= */
+   ========================= */
 
 const SUPABASE_URL =
   "https://dwqsyyikqyedbvscearv.supabase.co";
@@ -13,22 +12,9 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   "sb_publishable_uQk-bxeERNR9X-QLoVPqSQ_rdBIp5Cv";
 
-/* =========================================================
-   SUPABASE CLIENT
-   ========================================================= */
-
-const supabaseScript = document.createElement("script");
-
-supabaseScript.src =
-  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-
-supabaseScript.onload = initStore;
-
-document.head.appendChild(supabaseScript);
-
-/* =========================================================
+/* =========================
    STORE
-   ========================================================= */
+   ========================= */
 
 const STORE = {
   name: "Kivra Store",
@@ -36,9 +22,9 @@ const STORE = {
   whatsapp: "218916872045"
 };
 
-/* =========================================================
+/* =========================
    VARIABLES
-   ========================================================= */
+   ========================= */
 
 let supabase = null;
 let products = [];
@@ -51,21 +37,71 @@ let selectedProduct = null;
 let selectedPhone = null;
 let selectedColor = null;
 
-/* =========================================================
-   ELEMENT HELPER
-   ========================================================= */
+/* =========================
+   HELPER
+   ========================= */
 
 const $ = selector =>
   document.querySelector(selector);
 
 /* =========================================================
-   INIT
+   START
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  loadSupabase();
+
+  setupUI();
+
+  renderCart();
+
+  updateCartCount();
+
+});
+
+/* =========================================================
+   LOAD SUPABASE
+   ========================================================= */
+
+function loadSupabase() {
+
+  if (window.supabase) {
+    initStore();
+    return;
+  }
+
+  const script =
+    document.createElement("script");
+
+  script.src =
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+
+  script.onload = initStore;
+
+  script.onerror = () => {
+
+    showDatabaseError(
+      "تعذر تشغيل قاعدة البيانات."
+    );
+
+  };
+
+  document.head.appendChild(script);
+}
+
+/* =========================================================
+   INIT STORE
    ========================================================= */
 
 async function initStore() {
 
   if (!window.supabase) {
-    showDatabaseError("تعذر تشغيل قاعدة البيانات.");
+
+    showDatabaseError(
+      "تعذر تشغيل قاعدة البيانات."
+    );
+
     return;
   }
 
@@ -86,7 +122,8 @@ async function initStore() {
 
 function showDatabaseError(message) {
 
-  const grid = $("#productsGrid");
+  const grid =
+    $("#productsGrid");
 
   if (!grid) return;
 
@@ -122,7 +159,7 @@ async function loadProducts() {
   if (error) {
 
     console.error(
-      "KIVRA products error:",
+      "KIVRA PRODUCTS ERROR:",
       error
     );
 
@@ -133,7 +170,10 @@ async function loadProducts() {
     return;
   }
 
-  products = data || [];
+  products =
+    Array.isArray(data)
+      ? data
+      : [];
 
   renderProducts();
 }
@@ -156,7 +196,9 @@ function setupRealtime() {
         table: "products"
       },
       () => {
+
         loadProducts();
+
       }
     )
     .subscribe();
@@ -192,24 +234,18 @@ function getColorStyle(color) {
 
 function renderProducts() {
 
-  const grid = $("#productsGrid");
+  const grid =
+    $("#productsGrid");
 
   if (!grid) return;
 
-  const phoneElement = $("#phoneFilter");
-  const searchElement = $("#productSearch");
-
   const phone =
-    phoneElement
-      ? phoneElement.value
-      : "all";
+    $("#phoneFilter")?.value || "all";
 
   const search =
-    searchElement
-      ? searchElement.value
-        .trim()
-        .toLowerCase()
-      : "";
+    $("#productSearch")?.value
+      ?.trim()
+      .toLowerCase() || "";
 
   const filteredProducts =
     products.filter(product => {
@@ -236,7 +272,10 @@ function renderProducts() {
         name.includes(search) ||
         collection.includes(search);
 
-      return phoneMatch && searchMatch;
+      return (
+        phoneMatch &&
+        searchMatch
+      );
     });
 
   if (!filteredProducts.length) {
@@ -366,18 +405,23 @@ function openProduct(id) {
   selectedProduct =
     products.find(
       product =>
-        String(product.id) === String(id)
+        String(product.id) ===
+        String(id)
     );
 
   if (!selectedProduct) return;
 
   const phones =
-    Array.isArray(selectedProduct.phones)
+    Array.isArray(
+      selectedProduct.phones
+    )
       ? selectedProduct.phones
       : [];
 
   const colors =
-    Array.isArray(selectedProduct.colors)
+    Array.isArray(
+      selectedProduct.colors
+    )
       ? selectedProduct.colors
       : [];
 
@@ -389,16 +433,11 @@ function openProduct(id) {
 
   renderModal();
 
-  const modal = $("#productModal");
-  const overlay = $("#overlay");
+  $("#productModal")
+    ?.classList.add("open");
 
-  if (modal) {
-    modal.classList.add("open");
-  }
-
-  if (overlay) {
-    overlay.classList.add("open");
-  }
+  $("#overlay")
+    ?.classList.add("open");
 
   document.body.classList.add(
     "modal-open"
@@ -455,8 +494,9 @@ function renderModal() {
             : `
               <div class="mock-case">
                 ${escapeHTML(
-                  String(product.name || "K")
-                    .charAt(0)
+                  String(
+                    product.name || "K"
+                  ).charAt(0)
                 )}
               </div>
             `
@@ -491,6 +531,7 @@ function renderModal() {
             phones.length
               ? phones.map(phone => `
                   <button
+                    type="button"
                     class="option ${
                       phone === selectedPhone
                         ? "selected"
@@ -520,6 +561,7 @@ function renderModal() {
             colors.length
               ? colors.map(color => `
                   <button
+                    type="button"
                     class="option ${
                       color === selectedColor
                         ? "selected"
@@ -540,6 +582,7 @@ function renderModal() {
         </div>
 
         <button
+          type="button"
           class="primary-btn add-btn"
           id="modalAddToCart"
         >
@@ -550,7 +593,6 @@ function renderModal() {
       </div>
 
     </div>
-
   `;
 
   modalContent
@@ -589,17 +631,11 @@ function renderModal() {
 
     });
 
-  const addButton =
-    $("#modalAddToCart");
-
-  if (addButton) {
-
-    addButton.addEventListener(
+  $("#modalAddToCart")
+    ?.addEventListener(
       "click",
       addToCart
     );
-
-  }
 }
 
 /* =========================================================
@@ -632,7 +668,9 @@ function addToCart() {
   if (existingItem) {
 
     existingItem.quantity =
-      (existingItem.quantity || 1) + 1;
+      Number(
+        existingItem.quantity || 1
+      ) + 1;
 
   } else {
 
@@ -653,7 +691,9 @@ function addToCart() {
         selectedColor,
 
       price:
-        Number(selectedProduct.price || 0),
+        Number(
+          selectedProduct.price || 0
+        ),
 
       image:
         selectedProduct.image_url || "",
@@ -695,7 +735,8 @@ function updateCartCount() {
   const count =
     cart.reduce(
       (total, item) =>
-        total + Number(item.quantity || 1),
+        total +
+        Number(item.quantity || 1),
       0
     );
 
@@ -703,12 +744,13 @@ function updateCartCount() {
     $("#cartCount");
 
   if (element) {
-    element.textContent = count;
+    element.textContent =
+      count;
   }
 }
 
 /* =========================================================
-   RENDER CART
+   CART
    ========================================================= */
 
 function renderCart() {
@@ -726,11 +768,8 @@ function renderCart() {
       </div>
     `;
 
-    const totalElement =
-      $("#cartTotal");
-
-    if (totalElement) {
-      totalElement.textContent =
+    if ($("#cartTotal")) {
+      $("#cartTotal").textContent =
         "0 د.ل";
     }
 
@@ -742,10 +781,9 @@ function renderCart() {
       (item, index) => {
 
         const quantity =
-          Number(item.quantity || 1);
-
-        const itemImage =
-          item.image || "";
+          Number(
+            item.quantity || 1
+          );
 
         return `
           <div class="cart-row">
@@ -753,12 +791,12 @@ function renderCart() {
             <div
               class="cart-thumb"
               ${
-                itemImage
+                item.image
                   ? `style="
-                      background-image:url('${escapeHTML(itemImage)}');
-                      background-size:cover;
-                      background-position:center;
-                    "`
+                    background-image:url('${escapeHTML(item.image)}');
+                    background-size:cover;
+                    background-position:center;
+                  "`
                   : ""
               }
             ></div>
@@ -786,6 +824,7 @@ function renderCart() {
               <div class="quantity-controls">
 
                 <button
+                  type="button"
                   class="option"
                   data-action="decrease"
                   data-index="${index}"
@@ -798,6 +837,7 @@ function renderCart() {
                 </span>
 
                 <button
+                  type="button"
                   class="option"
                   data-action="increase"
                   data-index="${index}"
@@ -810,10 +850,10 @@ function renderCart() {
             </div>
 
             <button
+              type="button"
               class="icon-btn cart-delete"
               data-action="remove"
               data-index="${index}"
-              aria-label="حذف"
             >
               ×
             </button>
@@ -827,27 +867,36 @@ function renderCart() {
     .querySelectorAll("[data-action]")
     .forEach(button => {
 
-      const index =
-        Number(button.dataset.index);
-
-      const action =
-        button.dataset.action;
-
       button.addEventListener(
         "click",
         event => {
 
+          event.preventDefault();
           event.stopPropagation();
 
-          if (action === "increase") {
+          const index =
+            Number(
+              button.dataset.index
+            );
+
+          const action =
+            button.dataset.action;
+
+          if (
+            action === "increase"
+          ) {
             increaseQuantity(index);
           }
 
-          if (action === "decrease") {
+          if (
+            action === "decrease"
+          ) {
             decreaseQuantity(index);
           }
 
-          if (action === "remove") {
+          if (
+            action === "remove"
+          ) {
             removeCart(index);
           }
 
@@ -865,12 +914,11 @@ function renderCart() {
       0
     );
 
-  const totalElement =
-    $("#cartTotal");
+  if ($("#cartTotal")) {
 
-  if (totalElement) {
-    totalElement.textContent =
+    $("#cartTotal").textContent =
       `${total} د.ل`;
+
   }
 }
 
@@ -883,7 +931,9 @@ function increaseQuantity(index) {
   if (!cart[index]) return;
 
   cart[index].quantity =
-    Number(cart[index].quantity || 1) + 1;
+    Number(
+      cart[index].quantity || 1
+    ) + 1;
 
   saveCart();
 }
@@ -893,7 +943,9 @@ function decreaseQuantity(index) {
   if (!cart[index]) return;
 
   const quantity =
-    Number(cart[index].quantity || 1);
+    Number(
+      cart[index].quantity || 1
+    );
 
   if (quantity > 1) {
 
@@ -924,19 +976,11 @@ function removeCart(index) {
 
 function openCart() {
 
-  const drawer =
-    $("#cartDrawer");
+  $("#cartDrawer")
+    ?.classList.add("open");
 
-  const overlay =
-    $("#overlay");
-
-  if (drawer) {
-    drawer.classList.add("open");
-  }
-
-  if (overlay) {
-    overlay.classList.add("open");
-  }
+  $("#overlay")
+    ?.classList.add("open");
 
   document.body.classList.add(
     "modal-open"
@@ -946,7 +990,7 @@ function openCart() {
 }
 
 /* =========================================================
-   CLOSE EVERYTHING
+   CLOSE
    ========================================================= */
 
 function closeAll() {
@@ -958,11 +1002,8 @@ function closeAll() {
     "#overlay"
   ].forEach(selector => {
 
-    const element = $(selector);
-
-    if (element) {
-      element.classList.remove("open");
-    }
+    $(selector)
+      ?.classList.remove("open");
 
   });
 
@@ -971,25 +1012,13 @@ function closeAll() {
   );
 }
 
-/* =========================================================
-   CLOSE PRODUCT
-   ========================================================= */
-
 function closeModal() {
 
-  const modal =
-    $("#productModal");
+  $("#productModal")
+    ?.classList.remove("open");
 
-  const overlay =
-    $("#overlay");
-
-  if (modal) {
-    modal.classList.remove("open");
-  }
-
-  if (overlay) {
-    overlay.classList.remove("open");
-  }
+  $("#overlay")
+    ?.classList.remove("open");
 
   document.body.classList.remove(
     "modal-open"
@@ -997,212 +1026,181 @@ function closeModal() {
 }
 
 /* =========================================================
-   SEARCH
+   UI EVENTS
    ========================================================= */
 
-const searchBtn =
-  $("#searchBtn");
+function setupUI() {
 
-if (searchBtn) {
+  $("#searchBtn")
+    ?.addEventListener(
+      "click",
+      event => {
 
-  searchBtn.addEventListener(
-    "click",
-    () => {
+        event.preventDefault();
 
-      const productsSection =
-        $("#products");
+        $("#products")
+          ?.scrollIntoView({
+            behavior: "smooth"
+          });
 
-      if (productsSection) {
+        setTimeout(() => {
 
-        productsSection.scrollIntoView({
-          behavior: "smooth"
-        });
+          $("#productSearch")
+            ?.focus();
+
+        }, 500);
+
+      }
+    );
+
+  $("#phoneFilter")
+    ?.addEventListener(
+      "change",
+      renderProducts
+    );
+
+  $("#productSearch")
+    ?.addEventListener(
+      "input",
+      renderProducts
+    );
+
+  $("#cartBtn")
+    ?.addEventListener(
+      "click",
+      event => {
+
+        event.preventDefault();
+
+        openCart();
+
+      }
+    );
+
+  $("#closeCart")
+    ?.addEventListener(
+      "click",
+      closeAll
+    );
+
+  $("#closeModal")
+    ?.addEventListener(
+      "click",
+      closeModal
+    );
+
+  $("#overlay")
+    ?.addEventListener(
+      "click",
+      closeAll
+    );
+
+  setupMobileMenu();
+
+  setupCheckout();
+
+  setupAdmin();
+
+  setupNavigation();
+
+  document.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Escape"
+      ) {
+
+        closeAll();
 
       }
 
-      setTimeout(() => {
-
-        const search =
-          $("#productSearch");
-
-        if (search) {
-          search.focus();
-        }
-
-      }, 500);
-
     }
   );
-
-}
-
-/* =========================================================
-   FILTER
-   ========================================================= */
-
-const phoneFilter =
-  $("#phoneFilter");
-
-if (phoneFilter) {
-
-  phoneFilter.addEventListener(
-    "change",
-    renderProducts
-  );
-
-}
-
-const productSearch =
-  $("#productSearch");
-
-if (productSearch) {
-
-  productSearch.addEventListener(
-    "input",
-    renderProducts
-  );
-
-}
-
-/* =========================================================
-   CART BUTTON
-   ========================================================= */
-
-const cartBtn =
-  $("#cartBtn");
-
-if (cartBtn) {
-
-  cartBtn.addEventListener(
-    "click",
-    openCart
-  );
-
-}
-
-/* =========================================================
-   CLOSE CART
-   ========================================================= */
-
-const closeCart =
-  $("#closeCart");
-
-if (closeCart) {
-
-  closeCart.addEventListener(
-    "click",
-    closeAll
-  );
-
-}
-
-/* =========================================================
-   CLOSE PRODUCT
-   ========================================================= */
-
-const closeProduct =
-  $("#closeModal");
-
-if (closeProduct) {
-
-  closeProduct.addEventListener(
-    "click",
-    closeModal
-  );
-
-}
-
-/* =========================================================
-   OVERLAY
-   ========================================================= */
-
-const overlay =
-  $("#overlay");
-
-if (overlay) {
-
-  overlay.addEventListener(
-    "click",
-    closeAll
-  );
-
 }
 
 /* =========================================================
    MOBILE MENU
    ========================================================= */
 
-const menuBtn =
-  $("#menuBtn");
+function setupMobileMenu() {
 
-if (menuBtn) {
+  const menuBtn =
+    $("#menuBtn");
+
+  const nav =
+    $("#mainNav");
+
+  if (!menuBtn || !nav) return;
 
   menuBtn.addEventListener(
     "click",
-    () => {
+    event => {
+
+      event.preventDefault();
 
       menuBtn.classList.toggle(
         "active"
       );
 
-      const nav =
-        $("#mainNav");
-
-      if (nav) {
-
-        nav.classList.toggle(
-          "mobile-open"
-        );
-
-      }
+      nav.classList.toggle(
+        "mobile-open"
+      );
 
     }
   );
 
-}
+  nav
+    .querySelectorAll("a")
+    .forEach(link => {
 
-/* =========================================================
-   MOBILE MENU LINKS
-   ========================================================= */
-
-document
-  .querySelectorAll(".nav a")
-  .forEach(link => {
-
-    link.addEventListener(
-      "click",
-      () => {
-
-        const nav =
-          $("#mainNav");
-
-        if (nav) {
+      link.addEventListener(
+        "click",
+        () => {
 
           nav.classList.remove(
             "mobile-open"
           );
 
+          menuBtn.classList.remove(
+            "active"
+          );
+
         }
+      );
 
-      }
-    );
-
-  });
+    });
+}
 
 /* =========================================================
    CHECKOUT
    ========================================================= */
 
-const checkoutBtn =
-  $("#checkoutBtn");
+function setupCheckout() {
 
-if (checkoutBtn) {
+  $("#checkoutBtn")
+    ?.addEventListener(
+      "click",
+      event => {
 
-  checkoutBtn.addEventListener(
-    "click",
-    openCheckout
-  );
+        event.preventDefault();
 
+        openCheckout();
+
+      }
+    );
+
+  $("#closeCheckout")
+    ?.addEventListener(
+      "click",
+      closeAll
+    );
+
+  $("#checkoutForm")
+    ?.addEventListener(
+      "submit",
+      submitOrder
+    );
 }
 
 function openCheckout() {
@@ -1216,19 +1214,11 @@ function openCheckout() {
 
   renderCheckoutSummary();
 
-  const modal =
-    $("#checkoutModal");
+  $("#checkoutModal")
+    ?.classList.add("open");
 
-  const overlay =
-    $("#overlay");
-
-  if (modal) {
-    modal.classList.add("open");
-  }
-
-  if (overlay) {
-    overlay.classList.add("open");
-  }
+  $("#overlay")
+    ?.classList.add("open");
 
   document.body.classList.add(
     "modal-open"
@@ -1297,79 +1287,63 @@ function renderCheckoutSummary() {
       </strong>
 
     </div>
-
   `;
-}
-
-/* =========================================================
-   CLOSE CHECKOUT
-   ========================================================= */
-
-const closeCheckout =
-  $("#closeCheckout");
-
-if (closeCheckout) {
-
-  closeCheckout.addEventListener(
-    "click",
-    closeAll
-  );
-
 }
 
 /* =========================================================
    SUBMIT ORDER
    ========================================================= */
 
-const checkoutForm =
-  $("#checkoutForm");
+function submitOrder(event) {
 
-if (checkoutForm) {
+  event.preventDefault();
 
-  checkoutForm.addEventListener(
-    "submit",
-    function(event) {
+  if (!cart.length) {
 
-      event.preventDefault();
+    alert("السلة فارغة.");
 
-      if (!cart.length) {
+    return;
+  }
 
-        alert("السلة فارغة.");
+  const name =
+    $("#customerName")
+      ?.value.trim() || "";
 
-        return;
-      }
+  const phone =
+    $("#customerPhone")
+      ?.value.trim() || "";
 
-      const name =
-        $("#customerName")?.value.trim();
+  const address =
+    $("#customerAddress")
+      ?.value.trim() || "";
 
-      const phone =
-        $("#customerPhone")?.value.trim();
+  const notes =
+    $("#customerNotes")
+      ?.value.trim() || "";
 
-      const address =
-        $("#customerAddress")?.value.trim();
+  if (
+    !name ||
+    !phone ||
+    !address
+  ) {
 
-      const notes =
-        $("#customerNotes")?.value.trim();
+    alert(
+      "يرجى إدخال جميع البيانات المطلوبة."
+    );
 
-      if (!name || !phone || !address) {
+    return;
+  }
 
-        alert(
-          "يرجى إدخال جميع البيانات المطلوبة."
-        );
+  const total =
+    cart.reduce(
+      (sum, item) =>
+        sum +
+        Number(item.price || 0) *
+        Number(item.quantity || 1),
+      0
+    );
 
-        return;
-      }
-
-      const total =
-        cart.reduce(
-          (sum, item) =>
-            sum +
-            Number(item.price || 0) *
-            Number(item.quantity || 1),
-          0
-        );
-
-      let message =
+  let message =
 
 `🛍️ طلب جديد من KIVRA Store
 
@@ -1387,10 +1361,10 @@ ${address}
 📦 تفاصيل الطلب:
 `;
 
-      cart.forEach(
-        (item, index) => {
+  cart.forEach(
+    (item, index) => {
 
-          message += `
+      message += `
 
 ${index + 1}. ${item.name}
 • الهاتف: ${item.phone}
@@ -1402,10 +1376,10 @@ ${index + 1}. ${item.name}
 } د.ل
 `;
 
-        }
-      );
+    }
+  );
 
-      message += `
+  message += `
 
 ━━━━━━━━━━━━━━
 
@@ -1413,59 +1387,56 @@ ${index + 1}. ${item.name}
 ${total} د.ل
 `;
 
-      if (notes) {
+  if (notes) {
 
-        message += `
+    message += `
 
 📝 ملاحظات:
 ${notes}
 `;
 
-      }
+  }
 
-      message += `
+  message += `
 
 شكراً لاختياركم KIVRA Store.`;
 
-      const whatsappURL =
-        `https://wa.me/${STORE.whatsapp}?text=${
-          encodeURIComponent(message)
-        }`;
+  const whatsappURL =
+    `https://wa.me/${STORE.whatsapp}?text=${
+      encodeURIComponent(message)
+    }`;
 
-      localStorage.setItem(
-        "kivra_last_order",
-        JSON.stringify({
-          name,
-          phone,
-          address,
-          notes,
-          cart,
-          total,
-          createdAt:
-            new Date().toISOString()
-        })
-      );
-
-      window.open(
-        whatsappURL,
-        "_blank"
-      );
-
-      cart = [];
-
-      saveCart();
-
-      checkoutForm.reset();
-
-      closeAll();
-
-      showToast(
-        "تم تجهيز الطلب وفتح WhatsApp"
-      );
-
-    }
+  localStorage.setItem(
+    "kivra_last_order",
+    JSON.stringify({
+      name,
+      phone,
+      address,
+      notes,
+      cart,
+      total,
+      createdAt:
+        new Date().toISOString()
+    })
   );
 
+  window.open(
+    whatsappURL,
+    "_blank"
+  );
+
+  cart = [];
+
+  saveCart();
+
+  $("#checkoutForm")
+    ?.reset();
+
+  closeAll();
+
+  showToast(
+    "تم تجهيز الطلب وفتح WhatsApp"
+  );
 }
 
 /* =========================================================
@@ -1482,9 +1453,7 @@ function showToast(message) {
   toast.textContent =
     message;
 
-  toast.classList.add(
-    "show"
-  );
+  toast.classList.add("show");
 
   setTimeout(() => {
 
@@ -1496,111 +1465,94 @@ function showToast(message) {
 }
 
 /* =========================================================
-   ACTIVE NAV
+   NAVIGATION
    ========================================================= */
 
-const sections =
-  document.querySelectorAll(
-    "main section[id]"
-  );
+function setupNavigation() {
 
-window.addEventListener(
-  "scroll",
-  () => {
+  const sections =
+    document.querySelectorAll(
+      "main section[id]"
+    );
 
-    let current = "home";
+  const links =
+    document.querySelectorAll(
+      ".nav a"
+    );
 
-    sections.forEach(section => {
+  window.addEventListener(
+    "scroll",
+    () => {
 
-      const sectionTop =
-        section.offsetTop - 120;
+      let current = "home";
 
-      if (
-        window.scrollY >= sectionTop
-      ) {
+      sections.forEach(
+        section => {
 
-        current =
-          section.id;
+          const sectionTop =
+            section.offsetTop - 120;
 
-      }
+          if (
+            window.scrollY >=
+            sectionTop
+          ) {
 
-    });
+            current =
+              section.id;
 
-    document
-      .querySelectorAll(".nav a")
-      .forEach(link => {
+          }
 
-        link.classList.remove(
-          "active"
-        );
+        }
+      );
 
-        if (
-          link.getAttribute("href") ===
-          `#${current}`
-        ) {
+      links.forEach(
+        link => {
 
-          link.classList.add(
+          link.classList.remove(
             "active"
           );
 
+          if (
+            link.getAttribute(
+              "href"
+            ) === `#${current}`
+          ) {
+
+            link.classList.add(
+              "active"
+            );
+
+          }
+
         }
-
-      });
-
-  }
-);
-
-/* =========================================================
-   ESCAPE
-   ========================================================= */
-
-document.addEventListener(
-  "keydown",
-  event => {
-
-    if (event.key === "Escape") {
-
-      closeAll();
+      );
 
     }
-
-  }
-);
-
-/* =========================================================
-   SECURITY
-   ========================================================= */
-
-function escapeHTML(value) {
-
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
+  );
 }
 
 /* =========================================================
-   INITIAL CART
+   ADMIN
    ========================================================= */
 
-renderCart();
-updateCartCount();
+function setupAdmin() {
 
-/* =========================================================
-   KIVRA ADMIN
-   ========================================================= */
+  const button =
+    $("#addProductBtn");
 
-const adminPanel =
-  $("#adminPanel");
+  if (!button) return;
 
-const addProductBtn =
-  $("#addProductBtn");
+  button.addEventListener(
+    "click",
+    event => {
 
-const adminMessage =
-  $("#adminMessage");
+      event.preventDefault();
+
+      addKivraProduct();
+
+    }
+  );
+}
 
 /* =========================================================
    ADD PRODUCT
@@ -1608,12 +1560,15 @@ const adminMessage =
 
 async function addKivraProduct() {
 
+  const message =
+    $("#adminMessage");
+
   if (!supabase) {
 
-    if (adminMessage) {
+    if (message) {
 
-      adminMessage.textContent =
-        "قاعدة البيانات غير متصلة.";
+      message.textContent =
+        "قاعدة البيانات ما زالت قيد الاتصال، حاول بعد لحظة.";
 
     }
 
@@ -1621,19 +1576,25 @@ async function addKivraProduct() {
   }
 
   const name =
-    $("#adminName")?.value.trim();
+    $("#adminName")
+      ?.value.trim() || "";
 
   const price =
-    Number($("#adminPrice")?.value);
+    Number(
+      $("#adminPrice")?.value || 0
+    );
 
   const phonesText =
-    $("#adminPhones")?.value.trim();
+    $("#adminPhones")
+      ?.value.trim() || "";
 
   const colorsText =
-    $("#adminColors")?.value.trim();
+    $("#adminColors")
+      ?.value.trim() || "";
 
   const description =
-    $("#adminDescription")?.value.trim();
+    $("#adminDescription")
+      ?.value.trim() || "";
 
   const imageInput =
     $("#adminImages");
@@ -1643,15 +1604,15 @@ async function addKivraProduct() {
 
   if (
     !name ||
-    !price ||
+    price <= 0 ||
     !phonesText ||
     !colorsText ||
     !images.length
   ) {
 
-    if (adminMessage) {
+    if (message) {
 
-      adminMessage.textContent =
+      message.textContent =
         "يرجى إدخال الاسم والسعر والموديلات والألوان والصور.";
 
     }
@@ -1659,10 +1620,10 @@ async function addKivraProduct() {
     return;
   }
 
-  if (adminMessage) {
+  if (message) {
 
-    adminMessage.textContent =
-      "جاري إضافة الكفر...";
+    message.textContent =
+      "جاري رفع الكفر...";
 
   }
 
@@ -1682,9 +1643,9 @@ async function addKivraProduct() {
 
     const imageUrls = [];
 
-    /* =====================================================
-       UPLOAD ALL IMAGES
-       ===================================================== */
+    /* =========================
+       UPLOAD IMAGES
+       ========================= */
 
     for (
       let i = 0;
@@ -1714,13 +1675,16 @@ async function addKivraProduct() {
           .from("kivra-images")
           .upload(
             fileName,
-            file
+            file,
+            {
+              upsert: false
+            }
           );
 
       if (uploadError) {
 
         console.error(
-          "Upload error:",
+          "UPLOAD ERROR:",
           uploadError
         );
 
@@ -1739,8 +1703,7 @@ async function addKivraProduct() {
           );
 
       if (
-        publicData &&
-        publicData.publicUrl
+        publicData?.publicUrl
       ) {
 
         imageUrls.push(
@@ -1748,12 +1711,11 @@ async function addKivraProduct() {
         );
 
       }
-
     }
 
-    /* =====================================================
-       INSERT PRODUCT
-       ===================================================== */
+    /* =========================
+       INSERT
+       ========================= */
 
     const {
       error: insertError
@@ -1762,16 +1724,15 @@ async function addKivraProduct() {
         .from("products")
         .insert({
 
-          name: name,
+          name,
 
-          price: price,
+          price,
 
-          phones: phones,
+          phones,
 
-          colors: colors,
+          colors,
 
-          description:
-            description || "",
+          description,
 
           image_url:
             imageUrls[0] || "",
@@ -1790,7 +1751,7 @@ async function addKivraProduct() {
     if (insertError) {
 
       console.error(
-        "Insert error:",
+        "INSERT ERROR:",
         insertError
       );
 
@@ -1799,28 +1760,27 @@ async function addKivraProduct() {
       );
     }
 
-    /* =====================================================
+    /* =========================
        SUCCESS
-       ===================================================== */
+       ========================= */
 
-    if (adminMessage) {
+    if (message) {
 
-      adminMessage.textContent =
+      message.textContent =
         "تمت إضافة الكفر بنجاح ✅";
 
     }
 
-    const fields = [
+    [
       "#adminName",
       "#adminPrice",
       "#adminPhones",
       "#adminColors",
       "#adminDescription"
-    ];
+    ].forEach(selector => {
 
-    fields.forEach(selector => {
-
-      const field = $(selector);
+      const field =
+        $(selector);
 
       if (field) {
         field.value = "";
@@ -1829,13 +1789,10 @@ async function addKivraProduct() {
     });
 
     if (imageInput) {
-      imageInput.value = "";
-    }
 
-    /*
-      تحديث الموقع فورًا
-      بدون إعادة تشغيل الصفحة
-    */
+      imageInput.value = "";
+
+    }
 
     await loadProducts();
 
@@ -1846,38 +1803,58 @@ async function addKivraProduct() {
       error
     );
 
-    if (adminMessage) {
+    if (!message) return;
 
-      if (
-        error.message ===
-        "UPLOAD_ERROR"
-      ) {
+    if (
+      error.message ===
+      "UPLOAD_ERROR"
+    ) {
 
-        adminMessage.textContent =
-          "حدث خطأ أثناء رفع الصورة.";
+      message.textContent =
+        "فشل رفع الصورة. تأكد أن Bucket باسم kivra-images موجود وأن رفع الملفات مسموح.";
 
-      } else {
+    } else if (
+      error.message ===
+      "INSERT_ERROR"
+    ) {
 
-        adminMessage.textContent =
-          "حدث خطأ أثناء إضافة الكفر.";
+      message.textContent =
+        "تم رفع الصورة لكن فشل حفظ الكفر في قاعدة البيانات. تحقق من صلاحيات جدول products.";
 
-      }
+    } else {
+
+      message.textContent =
+        "حدث خطأ غير متوقع أثناء إضافة الكفر.";
 
     }
-
   }
-
 }
 
 /* =========================================================
-   ADMIN BUTTON
+   ESCAPE HTML
    ========================================================= */
 
-if (addProductBtn) {
+function escapeHTML(value) {
 
-  addProductBtn.addEventListener(
-    "click",
-    addKivraProduct
-  );
-
+  return String(value ?? "")
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 }
