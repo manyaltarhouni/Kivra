@@ -1675,7 +1675,36 @@ async function addKivraProduct() {
 }
 
 if (addProductBtn) {
-  addProductBtn.addEventListener("click", addKivraProduct);
-}
+  addProductBtn.addEventListener("click", /* =========================================================
+   OPEN KIVRA ADMIN
+   ========================================================= */
 
+const openAdminBtn = document.createElement("button");
 
+openAdminBtn.textContent = "＋ إضافة كفر";
+
+openAdminBtn.style.cssText = `
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  z-index:9999;
+  padding:12px 18px;
+  border:0;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:15px;
+`;
+
+document.body.appendChild(openAdminBtn);
+
+openAdminBtn.addEventListener("click", () => {
+
+  if (!adminPanel) return;
+
+  adminPanel.style.display = "block";
+
+  adminPanel.scrollIntoView({
+    behavior: "smooth"
+  });
+
+});
