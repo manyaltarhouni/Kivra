@@ -1,25 +1,17 @@
 /* =========================================================
    KIVRA STORE
-   DATABASE VERSION
+   JAVASCRIPT
    ========================================================= */
-
-/*
-  مهم:
-  المنتجات ليست هنا.
-
-  الموقع يقرأ المنتجات من Supabase.
-  بعد إعداد Supabase مرة واحدة:
-  إضافة كفر جديد لا تحتاج تعديل هذا الملف.
-*/
-
 
 /* =========================================================
    SUPABASE CONFIG
    ========================================================= */
 
-const SUPABASE_URL = "https://dwqsyyikqyedbvscearv.supabase.co";
+const SUPABASE_URL =
+  "https://dwqsyyikqyedbvscearv.supabase.co";
 
-const SUPABASE_ANON_KEY = "sb_publishable_uQk-bxeERNR9X-QLoVPqSQ_rdBIp5Cv";
+const SUPABASE_ANON_KEY =
+  "sb_publishable_uQk-bxeERNR9X-QLoVPqSQ_rdBIp5Cv";
 
 
 /* =========================================================
@@ -37,7 +29,7 @@ document.head.appendChild(supabaseScript);
 
 
 /* =========================================================
-   STORE SETTINGS
+   STORE
    ========================================================= */
 
 const STORE = {
@@ -52,7 +44,6 @@ const STORE = {
    ========================================================= */
 
 let supabase = null;
-
 let products = [];
 
 let cart = JSON.parse(
@@ -81,30 +72,15 @@ const grid =
 
 async function initStore() {
 
-  if (
-    SUPABASE_URL.includes("ضع_") ||
-    SUPABASE_ANON_KEY.includes("ضع_")
-  ) {
-
-    showDatabaseError(
-      "لم يتم ربط قاعدة المنتجات بعد."
-    );
-
-    return;
-  }
-
-
   supabase =
     window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_ANON_KEY
     );
 
-
   await loadProducts();
 
   setupRealtime();
-
 }
 
 
@@ -114,15 +90,16 @@ async function initStore() {
 
 function showDatabaseError(message) {
 
+  if (!grid) return;
+
   grid.innerHTML = `
     <div
       class="empty"
       style="grid-column:1/-1"
     >
-      ${message}
+      ${escapeHTML(message)}
     </div>
   `;
-
 }
 
 
@@ -143,7 +120,6 @@ async function loadProducts() {
       ascending: false
     });
 
-
   if (error) {
 
     console.error(
@@ -158,11 +134,9 @@ async function loadProducts() {
     return;
   }
 
-
   products = data || [];
 
   renderProducts();
-
 }
 
 
@@ -183,22 +157,16 @@ function setupRealtime() {
       },
       async () => {
 
-        /*
-          عند إضافة أو تعديل أو حذف كفر
-          يتم تحديث المنتجات تلقائيًا.
-        */
-
         await loadProducts();
 
       }
     )
     .subscribe();
-
 }
 
 
 /* =========================================================
-   PRODUCT COLORS
+   COLORS
    ========================================================= */
 
 function getColorStyle(color) {
@@ -219,7 +187,6 @@ function getColorStyle(color) {
   };
 
   return colors[color] || "#777";
-
 }
 
 
@@ -229,20 +196,25 @@ function getColorStyle(color) {
 
 function renderProducts() {
 
-  if (!grid) {
-    return;
-  }
+  if (!grid) return;
 
+  const phoneElement =
+    $("#phoneFilter");
+
+  const searchElement =
+    $("#productSearch");
 
   const phone =
-    $("#phoneFilter").value;
-
+    phoneElement
+      ? phoneElement.value
+      : "all";
 
   const search =
-    $("#productSearch").value
-      .trim()
-      .toLowerCase();
-
+    searchElement
+      ? searchElement.value
+          .trim()
+          .toLowerCase()
+      : "";
 
   const filteredProducts =
     products.filter(product => {
@@ -252,29 +224,23 @@ function renderProducts() {
           ? product.phones
           : [];
 
-
       const phoneMatch =
         phone === "all" ||
         phones.includes(phone);
-
 
       const name =
         String(product.name || "")
           .toLowerCase();
 
-
       const collection =
         String(product.collection || "")
           .toLowerCase();
-
 
       const searchMatch =
         name.includes(search) ||
         collection.includes(search);
 
-
       return phoneMatch && searchMatch;
-
     });
 
 
@@ -290,7 +256,6 @@ function renderProducts() {
     `;
 
     return;
-
   }
 
 
@@ -302,7 +267,6 @@ function renderProducts() {
           Array.isArray(product.colors)
             ? product.colors
             : [];
-
 
         const colorDots =
           colors
@@ -317,16 +281,14 @@ function renderProducts() {
             `)
             .join("");
 
-
         const image =
           product.image_url;
 
 
         return `
-
           <article
             class="product-card"
-            onclick="openProduct('${product.id}')"
+            onclick="openProduct('${escapeHTML(product.id)}')"
           >
 
             <div
@@ -342,11 +304,6 @@ function renderProducts() {
                       src="${escapeHTML(image)}"
                       alt="${escapeHTML(product.name)}"
                       loading="lazy"
-                      style="
-                        width:100%;
-                        height:100%;
-                        object-fit:contain;
-                      "
                     >
                   `
                   : `
@@ -365,7 +322,6 @@ function renderProducts() {
                 ${escapeHTML(product.name)}
               </h3>
 
-
               <p>
                 ${escapeHTML(
                   product.collection || ""
@@ -375,11 +331,9 @@ function renderProducts() {
                 ألوان
               </p>
 
-
               <div class="color-preview">
                 ${colorDots}
               </div>
-
 
               <span class="price">
                 ${Number(product.price || 0)}
@@ -389,12 +343,9 @@ function renderProducts() {
             </div>
 
           </article>
-
         `;
-
       })
       .join("");
-
 }
 
 
@@ -410,49 +361,37 @@ function openProduct(id) {
         String(product.id) === String(id)
     );
 
-
-  if (!selectedProduct) {
-    return;
-  }
-
+  if (!selectedProduct) return;
 
   const phones =
     Array.isArray(selectedProduct.phones)
       ? selectedProduct.phones
       : [];
 
-
   const colors =
     Array.isArray(selectedProduct.colors)
       ? selectedProduct.colors
       : [];
 
-
   selectedPhone =
     phones[0] || null;
-
 
   selectedColor =
     colors[0] || null;
 
-
   renderModal();
-
 
   $("#productModal")
     .classList
     .add("open");
 
-
   $("#overlay")
     .classList
     .add("open");
 
-
   document.body.classList.add(
     "modal-open"
   );
-
 }
 
 
@@ -462,26 +401,20 @@ function openProduct(id) {
 
 function renderModal() {
 
-  if (!selectedProduct) {
-    return;
-  }
-
+  if (!selectedProduct) return;
 
   const product =
     selectedProduct;
-
 
   const phones =
     Array.isArray(product.phones)
       ? product.phones
       : [];
 
-
   const colors =
     Array.isArray(product.colors)
       ? product.colors
       : [];
-
 
   const image =
     product.image_url;
@@ -503,21 +436,14 @@ function renderModal() {
               <img
                 src="${escapeHTML(image)}"
                 alt="${escapeHTML(product.name)}"
-                style="
-                  width:100%;
-                  height:100%;
-                  object-fit:contain;
-                "
               >
             `
             : `
               <div class="mock-case">
-                ${
-                  escapeHTML(
-                    String(product.name || "K")
-                      .charAt(0)
-                  )
-                }
+                ${escapeHTML(
+                  String(product.name || "K")
+                    .charAt(0)
+                )}
               </div>
             `
         }
@@ -531,11 +457,9 @@ function renderModal() {
           ${escapeHTML(product.collection || "")}
         </span>
 
-
         <h2>
           ${escapeHTML(product.name)}
         </h2>
-
 
         <span class="price">
           ${Number(product.price || 0)}
@@ -554,18 +478,18 @@ function renderModal() {
             phones.length
               ? phones.map(phone => `
 
-                  <button
-                    class="option ${
-                      phone === selectedPhone
-                        ? "selected"
-                        : ""
-                    }"
-                    onclick="selectPhone(${JSON.stringify(phone)})"
-                  >
-                    ${escapeHTML(phone)}
-                  </button>
+                <button
+                  class="option ${
+                    phone === selectedPhone
+                      ? "selected"
+                      : ""
+                  }"
+                  onclick="selectPhone(${JSON.stringify(phone)})"
+                >
+                  ${escapeHTML(phone)}
+                </button>
 
-                `).join("")
+              `).join("")
               : `
                 <span class="empty">
                   لا توجد موديلات محددة.
@@ -587,18 +511,18 @@ function renderModal() {
             colors.length
               ? colors.map(color => `
 
-                  <button
-                    class="option ${
-                      color === selectedColor
-                        ? "selected"
-                        : ""
-                    }"
-                    onclick="selectColor(${JSON.stringify(color)})"
-                  >
-                    ${escapeHTML(color)}
-                  </button>
+                <button
+                  class="option ${
+                    color === selectedColor
+                      ? "selected"
+                      : ""
+                  }"
+                  onclick="selectColor(${JSON.stringify(color)})"
+                >
+                  ${escapeHTML(color)}
+                </button>
 
-                `).join("")
+              `).join("")
               : `
                 <span class="empty">
                   لا توجد ألوان محددة.
@@ -613,21 +537,14 @@ function renderModal() {
           class="primary-btn add-btn"
           onclick="addToCart()"
         >
-
           أضف إلى السلة
-
-          <span>
-            ←
-          </span>
-
+          <span>←</span>
         </button>
 
       </div>
 
     </div>
-
   `;
-
 }
 
 
@@ -640,7 +557,6 @@ function selectPhone(phone) {
   selectedPhone = phone;
 
   renderModal();
-
 }
 
 
@@ -653,7 +569,6 @@ function selectColor(color) {
   selectedColor = color;
 
   renderModal();
-
 }
 
 
@@ -674,7 +589,6 @@ function addToCart() {
     );
 
     return;
-
   }
 
 
@@ -687,7 +601,6 @@ function addToCart() {
       item.phone === selectedPhone &&
 
       item.color === selectedColor
-
     );
 
 
@@ -720,7 +633,6 @@ function addToCart() {
       quantity: 1
 
     });
-
   }
 
 
@@ -729,7 +641,6 @@ function addToCart() {
   closeModal();
 
   openCart();
-
 }
 
 
@@ -744,11 +655,9 @@ function saveCart() {
     JSON.stringify(cart)
   );
 
-
   renderCart();
 
   updateCartCount();
-
 }
 
 
@@ -767,9 +676,12 @@ function updateCartCount() {
     );
 
 
-  $("#cartCount")
-    .textContent = count;
+  const counter =
+    $("#cartCount");
 
+  if (counter) {
+    counter.textContent = count;
+  }
 }
 
 
@@ -782,6 +694,8 @@ function renderCart() {
   const cartItems =
     $("#cartItems");
 
+  if (!cartItems) return;
+
 
   if (!cart.length) {
 
@@ -791,11 +705,12 @@ function renderCart() {
       </div>
     `;
 
-    $("#cartTotal")
-      .textContent = "0 د.ل";
+    if ($("#cartTotal")) {
+      $("#cartTotal").textContent =
+        "0 د.ل";
+    }
 
     return;
-
   }
 
 
@@ -813,20 +728,17 @@ function renderCart() {
 
             <div class="cart-thumb"></div>
 
-
             <div class="cart-row-content">
 
               <h4>
                 ${escapeHTML(item.name)}
               </h4>
 
-
               <p>
                 ${escapeHTML(item.phone)}
                 ·
                 ${escapeHTML(item.color)}
               </p>
-
 
               <strong>
                 ${
@@ -835,7 +747,6 @@ function renderCart() {
                 }
                 د.ل
               </strong>
-
 
               <div class="quantity-controls">
 
@@ -861,19 +772,15 @@ function renderCart() {
 
             </div>
 
-
             <button
               class="icon-btn cart-delete"
               onclick="removeCart(${index})"
-              aria-label="حذف"
             >
               ×
             </button>
 
           </div>
-
         `;
-
       }
     ).join("");
 
@@ -888,32 +795,32 @@ function renderCart() {
     );
 
 
-  $("#cartTotal")
-    .textContent =
-      `${total} د.ل`;
+  if ($("#cartTotal")) {
 
+    $("#cartTotal").textContent =
+      `${total} د.ل`;
+  }
 }
 
 
 /* =========================================================
-   INCREASE
+   QUANTITY
    ========================================================= */
 
 function increaseQuantity(index) {
+
+  if (!cart[index]) return;
 
   cart[index].quantity =
     (cart[index].quantity || 1) + 1;
 
   saveCart();
-
 }
 
 
-/* =========================================================
-   DECREASE
-   ========================================================= */
-
 function decreaseQuantity(index) {
+
+  if (!cart[index]) return;
 
   const quantity =
     cart[index].quantity || 1;
@@ -927,30 +834,25 @@ function decreaseQuantity(index) {
   } else {
 
     cart.splice(index, 1);
-
   }
 
 
   saveCart();
-
 }
 
 
-/* =========================================================
-   REMOVE
-   ========================================================= */
-
 function removeCart(index) {
+
+  if (!cart[index]) return;
 
   cart.splice(index, 1);
 
   saveCart();
-
 }
 
 
 /* =========================================================
-   OPEN CART
+   CART
    ========================================================= */
 
 function openCart() {
@@ -959,17 +861,11 @@ function openCart() {
     .classList
     .add("open");
 
-
   $("#overlay")
     .classList
     .add("open");
-
 }
 
-
-/* =========================================================
-   CLOSE EVERYTHING
-   ========================================================= */
 
 function closeAll() {
 
@@ -977,32 +873,23 @@ function closeAll() {
     .classList
     .remove("open");
 
-
   $("#productModal")
     .classList
     .remove("open");
-
 
   $("#checkoutModal")
     .classList
     .remove("open");
 
-
   $("#overlay")
     .classList
     .remove("open");
 
-
   document.body.classList.remove(
     "modal-open"
   );
-
 }
 
-
-/* =========================================================
-   CLOSE PRODUCT MODAL
-   ========================================================= */
 
 function closeModal() {
 
@@ -1010,16 +897,13 @@ function closeModal() {
     .classList
     .remove("open");
 
-
   $("#overlay")
     .classList
     .remove("open");
 
-
   document.body.classList.remove(
     "modal-open"
   );
-
 }
 
 
@@ -1027,111 +911,148 @@ function closeModal() {
    SEARCH
    ========================================================= */
 
-$("#searchBtn")
-  .addEventListener(
+const searchBtn =
+  $("#searchBtn");
+
+if (searchBtn) {
+
+  searchBtn.addEventListener(
     "click",
     () => {
 
-      document
-        .querySelector("#products")
-        .scrollIntoView({
+      const productsSection =
+        document.querySelector("#products");
+
+      if (productsSection) {
+
+        productsSection.scrollIntoView({
           behavior: "smooth"
         });
+      }
 
 
       setTimeout(() => {
 
-        $("#productSearch")
-          .focus();
+        const search =
+          $("#productSearch");
+
+        if (search) {
+          search.focus();
+        }
 
       }, 500);
-
     }
   );
+}
 
 
 /* =========================================================
    FILTER
    ========================================================= */
 
-$("#phoneFilter")
-  .addEventListener(
+const phoneFilter =
+  $("#phoneFilter");
+
+if (phoneFilter) {
+
+  phoneFilter.addEventListener(
     "change",
     renderProducts
   );
+}
 
 
-$("#productSearch")
-  .addEventListener(
+const productSearch =
+  $("#productSearch");
+
+if (productSearch) {
+
+  productSearch.addEventListener(
     "input",
     renderProducts
   );
+}
 
 
 /* =========================================================
    CART BUTTON
    ========================================================= */
 
-$("#cartBtn")
-  .addEventListener(
+const cartBtn =
+  $("#cartBtn");
+
+if (cartBtn) {
+
+  cartBtn.addEventListener(
     "click",
     openCart
   );
+}
 
 
 /* =========================================================
-   CLOSE CART
+   CLOSE BUTTONS
    ========================================================= */
 
-$("#closeCart")
-  .addEventListener(
+const closeCartBtn =
+  $("#closeCart");
+
+if (closeCartBtn) {
+
+  closeCartBtn.addEventListener(
     "click",
     closeAll
   );
+}
 
 
-/* =========================================================
-   CLOSE PRODUCT
-   ========================================================= */
+const closeModalBtn =
+  $("#closeModal");
 
-$("#closeModal")
-  .addEventListener(
+if (closeModalBtn) {
+
+  closeModalBtn.addEventListener(
     "click",
     closeModal
   );
+}
 
 
-/* =========================================================
-   OVERLAY
-   ========================================================= */
+const overlay =
+  $("#overlay");
 
-$("#overlay")
-  .addEventListener(
+if (overlay) {
+
+  overlay.addEventListener(
     "click",
     closeAll
   );
+}
 
 
 /* =========================================================
    MOBILE MENU
    ========================================================= */
 
-$("#menuBtn")
-  .addEventListener(
+const menuBtn =
+  $("#menuBtn");
+
+if (menuBtn) {
+
+  menuBtn.addEventListener(
     "click",
     () => {
 
-      $("#menuBtn")
-        .classList
-        .toggle("active");
-
+      menuBtn.classList.toggle(
+        "active"
+      );
 
       $("#mainNav")
         .classList
         .toggle("mobile-open");
-
     }
   );
+}
 
 
 /* =========================================================
@@ -1146,13 +1067,17 @@ document
       "click",
       () => {
 
-        $("#mainNav")
-          .classList
-          .remove("mobile-open");
+        const nav =
+          $("#mainNav");
 
+        if (nav) {
+
+          nav.classList.remove(
+            "mobile-open"
+          );
+        }
       }
     );
-
   });
 
 
@@ -1160,11 +1085,16 @@ document
    CHECKOUT
    ========================================================= */
 
-$("#checkoutBtn")
-  .addEventListener(
+const checkoutBtn =
+  $("#checkoutBtn");
+
+if (checkoutBtn) {
+
+  checkoutBtn.addEventListener(
     "click",
     openCheckout
   );
+}
 
 
 function openCheckout() {
@@ -1174,7 +1104,6 @@ function openCheckout() {
     alert("السلة فارغة.");
 
     return;
-
   }
 
 
@@ -1185,16 +1114,13 @@ function openCheckout() {
     .classList
     .add("open");
 
-
   $("#overlay")
     .classList
     .add("open");
 
-
   document.body.classList.add(
     "modal-open"
   );
-
 }
 
 
@@ -1206,6 +1132,8 @@ function renderCheckoutSummary() {
 
   const summary =
     $("#checkoutSummary");
+
+  if (!summary) return;
 
 
   const total =
@@ -1263,7 +1191,6 @@ function renderCheckoutSummary() {
     </div>
 
   `;
-
 }
 
 
@@ -1271,19 +1198,28 @@ function renderCheckoutSummary() {
    CLOSE CHECKOUT
    ========================================================= */
 
-$("#closeCheckout")
-  .addEventListener(
+const closeCheckout =
+  $("#closeCheckout");
+
+if (closeCheckout) {
+
+  closeCheckout.addEventListener(
     "click",
     closeAll
   );
+}
 
 
 /* =========================================================
    SUBMIT ORDER
    ========================================================= */
 
-$("#checkoutForm")
-  .addEventListener(
+const checkoutForm =
+  $("#checkoutForm");
+
+if (checkoutForm) {
+
+  checkoutForm.addEventListener(
     "submit",
     function(event) {
 
@@ -1295,7 +1231,6 @@ $("#checkoutForm")
         alert("السلة فارغة.");
 
         return;
-
       }
 
 
@@ -1304,18 +1239,15 @@ $("#checkoutForm")
           .value
           .trim();
 
-
       const phone =
         $("#customerPhone")
           .value
           .trim();
 
-
       const address =
         $("#customerAddress")
           .value
           .trim();
-
 
       const notes =
         $("#customerNotes")
@@ -1334,7 +1266,6 @@ $("#checkoutForm")
         );
 
         return;
-
       }
 
 
@@ -1381,7 +1312,6 @@ ${index + 1}. ${item.name}
   (item.quantity || 1)
 } د.ل
 `;
-
         }
       );
 
@@ -1402,7 +1332,6 @@ ${total} د.ل
 📝 ملاحظات:
 ${notes}
 `;
-
       }
 
 
@@ -1442,13 +1371,9 @@ ${notes}
 
       saveCart();
 
-
-      $("#checkoutForm")
-        .reset();
-
+      checkoutForm.reset();
 
       closeAll();
-
 
       showToast(
         "تم تجهيز الطلب وفتح WhatsApp"
@@ -1456,6 +1381,7 @@ ${notes}
 
     }
   );
+}
 
 
 /* =========================================================
@@ -1467,10 +1393,10 @@ function showToast(message) {
   const toast =
     $("#successToast");
 
+  if (!toast) return;
 
   toast.textContent =
     message;
-
 
   toast.classList.add("show");
 
@@ -1480,7 +1406,6 @@ function showToast(message) {
     toast.classList.remove("show");
 
   }, 3000);
-
 }
 
 
@@ -1513,9 +1438,7 @@ window.addEventListener(
 
         current =
           section.id;
-
       }
-
     });
 
 
@@ -1536,7 +1459,6 @@ window.addEventListener(
           link.classList.add(
             "active"
           );
-
         }
 
       });
@@ -1564,7 +1486,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   SECURITY HELPER
+   SECURITY
    ========================================================= */
 
 function escapeHTML(value) {
@@ -1580,100 +1502,241 @@ function escapeHTML(value) {
 
 
 /* =========================================================
+   ADMIN - ADD PRODUCTS
+   ========================================================= */
+
+const addProductBtn =
+  document.querySelector("#addProductBtn");
+
+const adminMessage =
+  document.querySelector("#adminMessage");
+
+
+async function addKivraProduct() {
+
+  if (!supabase) {
+
+    alert(
+      "قاعدة البيانات غير متصلة."
+    );
+
+    return;
+  }
+
+
+  const name =
+    document
+      .querySelector("#adminName")
+      .value
+      .trim();
+
+
+  const price =
+    Number(
+      document
+        .querySelector("#adminPrice")
+        .value
+    );
+
+
+  const phonesText =
+    document
+      .querySelector("#adminPhones")
+      .value
+      .trim();
+
+
+  const colorsText =
+    document
+      .querySelector("#adminColors")
+      .value
+      .trim();
+
+
+  const description =
+    document
+      .querySelector("#adminDescription")
+      .value
+      .trim();
+
+
+  const images =
+    document
+      .querySelector("#adminImages")
+      .files;
+
+
+  if (
+    !name ||
+    !price ||
+    !phonesText ||
+    !colorsText ||
+    !images.length
+  ) {
+
+    adminMessage.textContent =
+      "يرجى إدخال الاسم والسعر والموديلات والألوان والصور.";
+
+    return;
+  }
+
+
+  adminMessage.textContent =
+    "جاري إضافة الكفر...";
+
+
+  const phones =
+    phonesText
+      .split(",")
+      .map(x => x.trim())
+      .filter(Boolean);
+
+
+  const colors =
+    colorsText
+      .split(",")
+      .map(x => x.trim())
+      .filter(Boolean);
+
+
+  const file =
+    images[0];
+
+
+  const fileName =
+    `${Date.now()}-${file.name.replace(
+      /[^a-zA-Z0-9._-]/g,
+      ""
+    )}`;
+
+
+  const {
+    error: uploadError
+  } =
+    await supabase.storage
+      .from("kivra-images")
+      .upload(
+        fileName,
+        file
+      );
+
+
+  if (uploadError) {
+
+    console.error(uploadError);
+
+    adminMessage.textContent =
+      "حدث خطأ أثناء رفع الصورة.";
+
+    return;
+  }
+
+
+  const {
+    data: publicData
+  } =
+    supabase.storage
+      .from("kivra-images")
+      .getPublicUrl(
+        fileName
+      );
+
+
+  const imageUrl =
+    publicData.publicUrl;
+
+
+  const {
+    error
+  } =
+    await supabase
+      .from("products")
+      .insert({
+
+        name,
+
+        price,
+
+        phones,
+
+        colors,
+
+        description,
+
+        image_url:
+          imageUrl,
+
+        collection:
+          "iPhone",
+
+        theme:
+          "black",
+
+        active:
+          true
+
+      });
+
+
+  if (error) {
+
+    console.error(error);
+
+    adminMessage.textContent =
+      "حدث خطأ أثناء إضافة الكفر.";
+
+    return;
+  }
+
+
+  adminMessage.textContent =
+    "تمت إضافة الكفر بنجاح ✅";
+
+
+  document.querySelector(
+    "#adminName"
+  ).value = "";
+
+
+  document.querySelector(
+    "#adminPrice"
+  ).value = "";
+
+
+  document.querySelector(
+    "#adminPhones"
+  ).value = "";
+
+
+  document.querySelector(
+    "#adminColors"
+  ).value = "";
+
+
+  document.querySelector(
+    "#adminDescription"
+  ).value = "";
+
+
+  document.querySelector(
+    "#adminImages"
+  ).value = "";
+}
+
+
+if (addProductBtn) {
+
+  addProductBtn.addEventListener(
+    "click",
+    addKivraProduct
+  );
+}
+
+
+/* =========================================================
    INITIAL CART
    ========================================================= */
 
 renderCart();
 
-updateCartCount();                                          
-/* =========================================================
-   KIVRA ADMIN - ADD PRODUCTS
-   ========================================================= */
-
-const adminPanel = document.querySelector("#adminPanel");
-const addProductBtn = document.querySelector("#addProductBtn");
-const adminMessage = document.querySelector("#adminMessage");
-
-async function addKivraProduct() {
-
-  if (!supabase) {
-    alert("قاعدة البيانات غير متصلة.");
-    return;
-  }
-
-  const name = document.querySelector("#adminName").value.trim();
-  const price = Number(document.querySelector("#adminPrice").value);
-  const phonesText = document.querySelector("#adminPhones").value.trim();
-  const colorsText = document.querySelector("#adminColors").value.trim();
-  const description = document.querySelector("#adminDescription").value.trim();
-  const images = document.querySelector("#adminImages").files;
-
-  if (!name || !price || !phonesText || !colorsText || !images.length) {
-    adminMessage.textContent = "يرجى إدخال الاسم والسعر والموديلات والألوان والصور.";
-    return;
-  }
-
-  adminMessage.textContent = "جاري إضافة الكفر...";
-
-  const phones = phonesText.split(",").map(x => x.trim()).filter(Boolean);
-  const colors = colorsText.split(",").map(x => x.trim()).filter(Boolean);
-
-  let imageUrl = "";
-
-  const file = images[0];
-
-  const fileName =
-    `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "")}`;
-
-  const { error: uploadError } =
-    await supabase.storage
-      .from("kivra-images")
-      .upload(fileName, file);
-
-  if (uploadError) {
-    console.error(uploadError);
-    adminMessage.textContent = "حدث خطأ أثناء رفع الصورة.";
-    return;
-  }
-
-  const { data: publicData } =
-    supabase.storage
-      .from("kivra-images")
-      .getPublicUrl(fileName);
-
-  imageUrl = publicData.publicUrl;
-
-  const { error } =
-    await supabase
-      .from("products")
-      .insert({
-        name,
-        price,
-        phones,
-        colors,
-        description,
-        image_url: imageUrl,
-        collection: "iPhone",
-        theme: "black",
-        active: true
-      });
-
-  if (error) {
-    console.error(error);
-    adminMessage.textContent = "حدث خطأ أثناء إضافة الكفر.";
-    return;
-  }
-
-  adminMessage.textContent = "تمت إضافة الكفر بنجاح ✅";
-
-  document.querySelector("#adminName").value = "";
-  document.querySelector("#adminPrice").value = "";
-  document.querySelector("#adminPhones").value = "";
-  document.querySelector("#adminColors").value = "";
-  document.querySelector("#adminDescription").value = "";
-  document.querySelector("#adminImages").value = "";
-}
-
-if (addProductBtn) {
-  addProductBtn.addEventListener("click", /* =========================================================
-   
+updateCartCount();
