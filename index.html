@@ -3,27 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kivra Store — متجر كفرات آيفون</title>
+  <title>Kivra Phone Cases</title>
   
-  <!-- Google Fonts: Cairo -->
+  <!-- الخطوط والأيقونات -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- External CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- =========================================================
-       HEADER
-       ========================================================= -->
+  <!-- الهيدر العلوي -->
   <header class="header">
     <div class="logo">
-      KIVRA <span>STORE</span>
+      <img src="logo.png" alt="KIVRA Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div class="logo-fallback" style="display:none; font-weight:800; font-size:20px; color:#fff;">KIVRA</div>
     </div>
 
     <nav class="nav" id="mainNav">
@@ -35,156 +31,122 @@
     </nav>
 
     <div class="header-actions">
+      <button type="button" class="icon-btn" id="userBtn" title="الحساب">
+        <i class="fa-regular fa-user"></i>
+      </button>
       <button type="button" class="icon-btn" id="searchBtn" title="بحث">
         <i class="fa-solid fa-magnifying-glass"></i>
       </button>
-
       <button type="button" class="icon-btn cart-btn" id="cartBtn" title="سلة الشراء">
         <i class="fa-solid fa-cart-shopping"></i>
         <b id="cartCount">0</b>
       </button>
-
-      <button type="button" class="icon-btn" id="userBtn" title="الحساب">
-        <i class="fa-regular fa-user"></i>
-      </button>
-
-      <button type="button" class="menu-btn" id="menuBtn" title="القائمة">
-        <i class="fa-solid fa-bars"></i>
-      </button>
     </div>
   </header>
 
-  <!-- =========================================================
-       MAIN CONTENT
-       ========================================================= -->
   <main>
-
-    <!-- HERO SECTION -->
-    <section class="hero" id="home">
-      <div class="hero-copy">
+    <!-- القسم الرئيسي (Hero) -->
+    <section class="hero-banner" id="home">
+      <div class="hero-text">
         <h1>KIVRA: حماية بتصميم مميز</h1>
-        <p>iPhone 15 Pro وجميع الموديلات الأخرى متوفرة الآن</p>
-        <div class="hero-buttons">
-          <a href="#products" class="primary-btn">
-            Shop Now <span>←</span>
-          </a>
-        </div>
+        <a href="#products" class="shop-now-btn">Shop Now</a>
       </div>
-
-      <div class="hero-product">
-        <div class="halo"></div>
-        <div class="phone">
-          <div class="phone-camera"></div>
-          <div class="phone-label">K</div>
-        </div>
+      <div class="hero-image-container">
+        <!-- يمكن وضع صورة الهواتف المجمعة هنا -->
+        <span class="model-tag">iPhone 15 Pro</span>
       </div>
     </section>
 
-    <!-- FEATURES SECTION -->
-    <section class="features">
-      <div>
-        <i class="fa-solid fa-ribbon" style="font-size: 24px; color: #df5bd1; margin-bottom: 10px;"></i>
+    <!-- قسم المميزات الثلاثية -->
+    <section class="features-section">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-ribbon"></i></div>
         <h3>جودة عالية</h3>
-        <p>خامات ممتازة تدوم طويلاً وتتحمل الاستخدام اليومي.</p>
       </div>
-
-      <div>
-        <i class="fa-solid fa-mobile-screen-button" style="font-size: 24px; color: #df5bd1; margin-bottom: 10px;"></i>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
         <h3>تصاميم مميزة</h3>
-        <p>أشكال فريدة تناسب كافة الأذواق والشخصيات.</p>
       </div>
-
-      <div>
-        <i class="fa-solid fa-shield-halved" style="font-size: 24px; color: #df5bd1; margin-bottom: 10px;"></i>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
         <h3>حماية</h3>
-        <p>مقاومة فائقة للصدمات وحماية متكاملة لجهازك.</p>
       </div>
     </section>
 
-    <!-- PRODUCTS / FEATURED COLLECTIONS SECTION -->
+    <div class="see-more-container">
+      <a href="#products" class="see-more-btn">شاهد المزيد</a>
+    </div>
+
+    <!-- قسم المجموعات الممتازة -->
     <section class="section" id="products">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow"><span></span> المجموعات المختارة</span>
-          <h2>Featured Collections</h2>
-        </div>
+      <h2 class="section-title-center">Featured Collections</h2>
 
-        <div class="product-tools">
-          <input type="text" id="productSearch" placeholder="بحث عن كفر...">
-          <select id="phoneFilter">
-            <option value="all">كل الموديلات</option>
-            <option value="iPhone 15 Pro">iPhone 15 Pro</option>
-            <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
-            <option value="iPhone 14 Pro">iPhone 14 Pro</option>
-            <option value="iPhone 13">iPhone 13</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Grid dynamically populated by main.js -->
+      <!-- شبكة المنتجات -->
       <div class="products-grid" id="productsGrid">
-        <div class="empty" style="grid-column: 1 / -1;">
-          جاري تحميل المنتجات...
+        <!-- المنتجات الافتراضية للواجهة المطابقة للصورة -->
+        <article class="product-card" onclick="openProduct(1)">
+          <div class="product-image">
+            <div class="mock-bg dark-case"></div>
+          </div>
+          <div class="product-info">
+            <h3>Mesa Black</h3>
+            <span class="price">15.00 د.ل</span>
+          </div>
+        </article>
+
+        <article class="product-card" onclick="openProduct(2)">
+          <div class="product-image">
+            <div class="mock-bg pink-gradient-case"></div>
+          </div>
+          <div class="product-info">
+            <h3>Nebula Pink</h3>
+            <span class="price">15.00 د.ل</span>
+          </div>
+        </article>
+
+        <article class="product-card" onclick="openProduct(3)">
+          <div class="product-image">
+            <div class="mock-bg purple-case"></div>
+          </div>
+          <div class="product-info">
+            <h3>Black Pink</h3>
+            <span class="price">15.00 د.ل</span>
+          </div>
+        </article>
+
+        <article class="product-card" onclick="openProduct(4)">
+          <div class="product-image">
+            <div class="mock-bg dark-case"></div>
+          </div>
+          <div class="product-info">
+            <h3>Mesa Black</h3>
+            <span class="price">15.00 د.ل</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- الفوتر السفلي -->
+    <footer class="site-footer">
+      <div class="footer-location">
+        <i class="fa-solid fa-location-dot"></i>
+        <div>
+          <strong>بنغازي</strong>
+          <span>Benghazi</span>
         </div>
       </div>
-    </section>
-
-    <!-- CUSTOM SECTION -->
-    <section class="section custom-section" id="custom">
-      <div>
-        <span class="mini-title">صمم بنفسك</span>
-        <h2>كفرات خاصة وحسب الطلب</h2>
-        <p>اختر التصميم الخاص بك أو طلب اسمك ومطبوعاتك المفضلة على كفرات عالية الجودة.</p>
-        <a href="#contact" class="secondary-btn">تواصل لطلب تصميم خاص</a>
+      <div class="footer-links">
+        <a href="#home">الرئيسية</a>
+        <a href="#custom">تخصيص</a>
+        <a href="#about">About Kivra</a>
+        <a href="#contact">Contact Us</a>
       </div>
-      <div class="custom-shape">
-        <div class="mock-case big">K</div>
-      </div>
-    </section>
-
-    <!-- ABOUT SECTION -->
-    <section class="section about-section" id="about">
-      <span class="mini-title">من نحن</span>
-      <h2>عن Kivra Store</h2>
-      <p>متجر ليبيا الأول المتخصص في تقديم أفضل كفرات وحماية الهواتف الذكية بتصاميم عصرية، جودة عالية، وأسعار مناسبة مع خدمة توصيل سريعة.</p>
-    </section>
-
-    <!-- CONTACT SECTION -->
-    <section class="section contact-section" id="contact">
-      <div>
-        <span class="mini-title">تواصل معنا</span>
-        <h2>بنغازي</h2>
-        <p class="contact-description">Benghazi — ليبيا</p>
-      </div>
-      <div class="contact-links">
-        <div class="contact-item">
-          <small>الهاتف</small>
-          <strong>0916872045</strong>
-        </div>
-        <div class="contact-item">
-          <small>واتساب</small>
-          <strong>218916872045+</strong>
-        </div>
-      </div>
-    </section>
-
+    </footer>
   </main>
 
-  <!-- =========================================================
-       FOOTER
-       ========================================================= -->
-  <footer>
-    <p>© 2026 KIVRA STORE. جميع الحقوق محفوظة.</p>
-    <div class="footer-center">تصاميم وحماية فائقة</div>
-    <div>Benghazi, Libya</div>
-  </footer>
-
-  <!-- =========================================================
-       MODALS & OVERLAYS
-       ========================================================= -->
+  <!-- النوافذ المنبثقة والسلة -->
   <div class="overlay" id="overlay"></div>
 
-  <!-- CART DRAWER -->
   <aside class="drawer" id="cartDrawer">
     <div class="drawer-head">
       <h3>سلة التسوق</h3>
@@ -194,56 +156,16 @@
       <div class="empty">السلة فارغة</div>
     </div>
     <div class="cart-footer">
-      <div>
-        <span>المجموع:</span>
-        <strong id="cartTotal">0 د.ل</strong>
-      </div>
+      <div><span>المجموع:</span><strong id="cartTotal">0 د.ل</strong></div>
       <button type="button" class="primary-btn" id="checkoutBtn">إتمام الطلب</button>
     </div>
   </aside>
 
-  <!-- PRODUCT MODAL -->
   <div class="modal" id="productModal">
     <button type="button" class="modal-close" id="closeModal">&times;</button>
     <div id="modalContent"></div>
   </div>
 
-  <!-- CHECKOUT MODAL -->
-  <div class="modal checkout-modal" id="checkoutModal">
-    <button type="button" class="modal-close" id="closeCheckout">&times;</button>
-    <div class="checkout-content">
-      <h2>إتمام الشراء</h2>
-      <p class="checkout-note">يرجى ملء البيانات التالية لإرسال الطلب عبر واتساب</p>
-      
-      <form id="checkoutForm">
-        <label>
-          الاسم بالكامل *
-          <input type="text" id="customerName" required placeholder="أدخل اسمك الكامل">
-        </label>
-        <label>
-          رقم الهاتف *
-          <input type="tel" id="customerPhone" required placeholder="09X XXXXXXX">
-        </label>
-        <label>
-          العنوان / المدينة والمنطقة *
-          <input type="text" id="customerAddress" required placeholder="مثال: بنغازي - الحدائق">
-        </label>
-        <label>
-          ملاحظات إضافية
-          <textarea id="customerNotes" rows="3" placeholder="أي ملاحظات خاصة بالتوصيل..."></textarea>
-        </label>
-
-        <div class="checkout-summary" id="checkoutSummary"></div>
-
-        <button type="submit" class="primary-btn checkout-submit">تأكيد الطلب عبر واتساب</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- SUCCESS TOAST -->
-  <div class="success-toast" id="successToast"></div>
-
-  <!-- External JS -->
   <script src="main.js"></script>
 </body>
 </html>
