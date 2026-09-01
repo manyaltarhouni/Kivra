@@ -3,708 +3,247 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <meta
-    name="description"
-    content="KIVRA Store — كفرات آيفون بتصاميم عصرية وجودة عالية."
-  >
-
-  <title>KIVRA Store — كفرات آيفون</title>
-
+  <title>Kivra Store — متجر كفرات آيفون</title>
+  
+  <!-- Google Fonts: Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
-
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- External CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header class="header">
-
-  <a class="logo" href="#home">
-    KIVRA<span>.</span>
-  </a>
-
-  <nav class="nav" id="mainNav">
-    <a href="#home" class="active">الرئيسية</a>
-    <a href="#collections">المجموعات</a>
-    <a href="#products">الكفرات</a>
-    <a href="#custom">تخصيص</a>
-    <a href="#about">من نحن</a>
-    <a href="#contact">تواصل معنا</a>
-  </nav>
-
-  <div class="header-actions">
-
-    <button
-      class="icon-btn"
-      id="searchBtn"
-      aria-label="البحث"
-    >
-      ⌕
-    </button>
-
-    <button
-      class="icon-btn cart-btn"
-      id="cartBtn"
-      aria-label="السلة"
-    >
-      🛒
-      <b id="cartCount">0</b>
-    </button>
-
-    <button
-      class="menu-btn"
-      id="menuBtn"
-      aria-label="القائمة"
-    >
-      ☰
-    </button>
-
-  </div>
-
-</header>
-
-
-<main id="home">
-
-  <!-- ================= HERO ================= -->
-
-  <section class="hero">
-
-    <div class="hero-glow glow-one"></div>
-    <div class="hero-glow glow-two"></div>
-
-    <div class="hero-copy">
-
-      <div class="eyebrow">
-        <span></span>
-        NEW COLLECTION 2026
-      </div>
-
-      <h1>
-        حماية تليق<br>
-        <em>بجهازك.</em>
-      </h1>
-
-      <p>
-        كفرات KIVRA تجمع بين التصميم العصري،
-        الحماية والجودة في قطعة واحدة.
-      </p>
-
-      <div class="hero-buttons">
-
-        <a href="#products" class="primary-btn">
-          اكتشف الكفرات
-          <span>←</span>
-        </a>
-
-        <a href="#about" class="secondary-btn">
-          اعرف المزيد
-        </a>
-
-      </div>
-
+  <!-- =========================================================
+       HEADER
+       ========================================================= -->
+  <header class="header">
+    <div class="logo">
+      KIVRA <span>STORE</span>
     </div>
 
-
-    <div class="hero-product">
-
-      <div class="halo"></div>
-
-      <div class="phone">
-        <div class="phone-camera"></div>
-        <div class="phone-label">K</div>
-      </div>
-
-      <div class="floating-card card-top">
-        <small>PREMIUM</small>
-        <strong>Protection</strong>
-      </div>
-
-      <div class="floating-card card-bottom">
-        <strong>4.9</strong>
-        <span>★ ★ ★ ★ ★</span>
-      </div>
-
-    </div>
-
-
-    <div class="hero-bottom">
-      <span>01</span>
-      <div class="line"></div>
-      <span>03</span>
-    </div>
-
-  </section>
-
-
-  <!-- ================= FEATURES ================= -->
-
-  <section class="features">
-
-    <div>
-      <strong>01</strong>
-      <h3>حماية موثوقة</h3>
-      <p>مواد مختارة لحماية هاتفك يوميًا.</p>
-    </div>
-
-    <div>
-      <strong>02</strong>
-      <h3>تصاميم مميزة</h3>
-      <p>تصاميم عصرية تناسب ذوقك.</p>
-    </div>
-
-    <div>
-      <strong>03</strong>
-      <h3>جودة عالية</h3>
-      <p>تفاصيل دقيقة وتشطيب أنيق.</p>
-    </div>
-
-  </section>
-
-
-  <!-- ================= COLLECTIONS ================= -->
-
-  <section class="section" id="collections">
-
-    <div class="section-head">
-
-      <div>
-        <span class="mini-title">
-          KIVRA COLLECTIONS
-        </span>
-
-        <h2>
-          المجموعات
-          <em>المميزة</em>
-        </h2>
-      </div>
-
-      <a href="#products">
-        عرض الكل
-        <span>←</span>
-      </a>
-
-    </div>
-
-
-    <div class="collection-grid">
-
-      <article class="collection-card large">
-
-        <div class="collection-art art-pink">
-          <div class="mock-case">K</div>
-        </div>
-
-        <div class="collection-info">
-          <span>01 / PREMIUM</span>
-          <h3>Signature</h3>
-          <p>أناقة بسيطة بتفاصيل جريئة.</p>
-        </div>
-
-      </article>
-
-
-      <article class="collection-card">
-
-        <div class="collection-art art-blue">
-          <div class="mock-case">K</div>
-        </div>
-
-        <div class="collection-info">
-          <span>02 / URBAN</span>
-          <h3>Urban</h3>
-          <p>أسلوب يومي عصري.</p>
-        </div>
-
-      </article>
-
-
-      <article class="collection-card">
-
-        <div class="collection-art art-purple">
-          <div class="mock-case">K</div>
-        </div>
-
-        <div class="collection-info">
-          <span>03 / ESSENTIAL</span>
-          <h3>Essential</h3>
-          <p>بساطة تحمي هاتفك.</p>
-        </div>
-
-      </article>
-
-    </div>
-
-  </section>
-
-
-  <!-- ================= PRODUCTS ================= -->
-
-  <section class="section products-section" id="products">
-
-    <div class="section-head">
-
-      <div>
-        <span class="mini-title">
-          SHOP KIVRA
-        </span>
-
-        <h2>
-          اختر
-          <em>كفرك</em>
-        </h2>
-      </div>
-
-
-      <div class="product-tools">
-
-        <select id="phoneFilter">
-
-          <option value="all">
-            كل أجهزة iPhone
-          </option>
-
-          <option value="iPhone 12">
-            iPhone 12
-          </option>
-
-          <option value="iPhone 13">
-            iPhone 13
-          </option>
-
-          <option value="iPhone 14">
-            iPhone 14
-          </option>
-
-          <option value="iPhone 15">
-            iPhone 15
-          </option>
-
-          <option value="iPhone 16">
-            iPhone 16
-          </option>
-
-          <option value="iPhone 17">
-            iPhone 17
-          </option>
-
-        </select>
-
-
-        <input
-          id="productSearch"
-          type="search"
-          placeholder="ابحث عن كفر..."
-          autocomplete="off"
-        >
-
-      </div>
-
-    </div>
-
-
-    <div
-      class="products-grid"
-      id="productsGrid"
-    ></div>
-
-  </section>
-
-
-  <!-- ================= CUSTOM ================= -->
-
-  <section class="custom-section" id="custom">
-
-    <div>
-
-      <span class="mini-title">
-        MAKE IT YOURS
-      </span>
-
-      <h2>
-        صمّمها
-        <em>بطريقتك.</em>
-      </h2>
-
-      <p>
-        نريد أن يكون كفرك انعكاسًا لشخصيتك.
-        يمكننا استقبال طلبات التخصيص والتواصل
-        معك لمعرفة التفاصيل.
-      </p>
-
-      <a
-        class="primary-btn"
-        href="https://wa.me/218916872045"
-        target="_blank"
-        rel="noopener"
-      >
-        تواصل للتخصيص
-        <span>←</span>
-      </a>
-
-    </div>
-
-
-    <div class="custom-shape">
-      <div class="mock-case big">K</div>
-    </div>
-
-  </section>
-
-
-  <!-- ================= ABOUT ================= -->
-
-  <section class="about-section" id="about">
-
-    <span class="mini-title">
-      ABOUT KIVRA STORE
-    </span>
-
-    <h2>
-      تفاصيل صغيرة،
-      <br>
-      <em>فرق كبير.</em>
-    </h2>
-
-    <p>
-      KIVRA Store هو متجر إلكتروني متخصص في كفرات
-      الآيفون، نهدف إلى تقديم تصاميم عصرية تجمع بين
-      الأناقة والحماية والجودة، مع توفير خيارات متعددة
-      من الموديلات والألوان لتختار ما يناسبك.
-    </p>
-
-    <p>
-      نعمل على تطوير تجربة شراء بسيطة وسريعة،
-      من اختيار الكفر والموديل واللون إلى تأكيد الطلب
-      والتواصل معك عبر WhatsApp.
-    </p>
-
-  </section>
-
-
-  <!-- ================= CONTACT ================= -->
-
-  <section class="contact-section" id="contact">
-
-    <div>
-
-      <span class="mini-title">
-        GET IN TOUCH
-      </span>
-
-      <h2>
-        تواصل
-        <em>معنا.</em>
-      </h2>
-
-      <p class="contact-description">
-        لديك سؤال عن كفر أو موديل أو لون؟
-        تواصل معنا وسنساعدك.
-      </p>
-
-    </div>
-
-
-    <div class="contact-links">
-
-      <a
-        href="tel:0916872045"
-        class="contact-item"
-      >
-        <small>الهاتف</small>
-        <strong>0916872045</strong>
-      </a>
-
-
-      <a
-        href="https://wa.me/218916872045"
-        target="_blank"
-        rel="noopener"
-        class="contact-item whatsapp-link"
-      >
-        <small>WhatsApp</small>
-        <strong>راسلنا الآن ↗</strong>
-      </a>
-
-
-      <div class="contact-item">
-        <small>Social Media</small>
-        <strong>Kivra Store</strong>
-      </div>
-
-    </div>
-
-  </section>
-
-</main>
-
-
-<!-- ================= FOOTER ================= -->
-
-<footer>
-
-  <div class="logo">
-    KIVRA<span>.</span>
-  </div>
-
-  <div class="footer-center">
-    Kivra Store
-  </div>
-
-  <p>
-    © 2026 KIVRA Store. جميع الحقوق محفوظة.
-  </p>
-
-</footer>
-
-
-<!-- ================= OVERLAY ================= -->
-
-<div
-  class="overlay"
-  id="overlay"
-></div>
-
-
-<!-- ================= CART ================= -->
-
-<aside
-  class="drawer"
-  id="cartDrawer"
->
-
-  <div class="drawer-head">
-
-    <div>
-      <span class="mini-title">
-        KIVRA STORE
-      </span>
-
-      <h3>
-        سلة المشتريات
-      </h3>
-    </div>
-
-    <button
-      id="closeCart"
-      aria-label="إغلاق"
-    >
-      ×
-    </button>
-
-  </div>
-
-
-  <div
-    id="cartItems"
-    class="cart-items"
-  ></div>
-
-
-  <div class="cart-footer">
-
-    <div>
-      <span>الإجمالي</span>
-
-      <strong id="cartTotal">
-        0 د.ل
-      </strong>
-    </div>
-
-    <button
-      class="primary-btn"
-      id="checkoutBtn"
-    >
-      إتمام الطلب
-    </button>
-
-  </div>
-
-</aside>
-
-
-<!-- ================= PRODUCT MODAL ================= -->
-
-<div
-  class="modal"
-  id="productModal"
->
-
-  <button
-    class="modal-close"
-    id="closeModal"
-    aria-label="إغلاق"
-  >
-    ×
-  </button>
-
-  <div id="modalContent"></div>
-
-</div>
-
-
-<!-- ================= CHECKOUT MODAL ================= -->
-
-<div
-  class="modal checkout-modal"
-  id="checkoutModal"
->
-
-  <button
-    class="modal-close"
-    id="closeCheckout"
-    aria-label="إغلاق"
-  >
-    ×
-  </button>
-
-
-  <div class="checkout-content">
-
-    <span class="mini-title">
-      ORDER DETAILS
-    </span>
-
-    <h2>
-      بيانات
-      <em>الطلب</em>
-    </h2>
-
-    <p class="checkout-note">
-      أدخل بياناتك حتى نتواصل معك لتأكيد الطلب.
-    </p>
-
-
-    <form id="checkoutForm">
-
-      <label>
-        الاسم الكامل
-        <input
-          id="customerName"
-          type="text"
-          required
-          placeholder="اكتب اسمك"
-        >
-      </label>
-
-
-      <label>
-        رقم الهاتف
-        <input
-          id="customerPhone"
-          type="tel"
-          required
-          inputmode="tel"
-          placeholder="09xxxxxxxx"
-        >
-      </label>
-
-
-      <label>
-        المنطقة / العنوان
-        <input
-          id="customerAddress"
-          type="text"
-          required
-          placeholder="مثال: بنغازي - الهواري"
-        >
-      </label>
-
-
-      <label>
-        ملاحظات
-        <textarea
-          id="customerNotes"
-          rows="3"
-          placeholder="أي ملاحظات إضافية..."
-        ></textarea>
-      </label>
-
-
-      <div
-        class="checkout-summary"
-        id="checkoutSummary"
-      ></div>
-
-
-      <button
-        type="submit"
-        class="primary-btn checkout-submit"
-      >
-        تأكيد الطلب عبر WhatsApp
-        <span>←</span>
+    <nav class="nav" id="mainNav">
+      <a href="#home" class="active">الرئيسية</a>
+      <a href="#collections">المجموعات</a>
+      <a href="#custom">تخصيص</a>
+      <a href="#about">عن Kivra</a>
+      <a href="#contact">اتصل بنا</a>
+    </nav>
+
+    <div class="header-actions">
+      <button type="button" class="icon-btn" id="searchBtn" title="بحث">
+        <i class="fa-solid fa-magnifying-glass"></i>
       </button>
 
-    </form>
+      <button type="button" class="icon-btn cart-btn" id="cartBtn" title="سلة الشراء">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <b id="cartCount">0</b>
+      </button>
 
+      <button type="button" class="icon-btn" id="userBtn" title="الحساب">
+        <i class="fa-regular fa-user"></i>
+      </button>
+
+      <button type="button" class="menu-btn" id="menuBtn" title="القائمة">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       MAIN CONTENT
+       ========================================================= -->
+  <main>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="home">
+      <div class="hero-copy">
+        <h1>KIVRA: حماية بتصميم مميز</h1>
+        <p>iPhone 15 Pro وجميع الموديلات الأخرى متوفرة الآن</p>
+        <div class="hero-buttons">
+          <a href="#products" class="primary-btn">
+            Shop Now <span>←</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-product">
+        <div class="halo"></div>
+        <div class="phone">
+          <div class="phone-camera"></div>
+          <div class="phone-label">K</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features">
+      <div>
+        <i class="fa-solid fa-ribbon" style="font-size: 24px; color: #df5bd1; margin-bottom: 10px;"></i>
+        <h3>جودة عالية</h3>
+        <p>خامات ممتازة تدوم طويلاً وتتحمل الاستخدام اليومي.</p>
+      </div>
+
+      <div>
+        <i class="fa-solid fa-mobile-screen-button" style="font-size: 24px; color: #df5bd1; margin-bottom: 10px;"></i>
+        <h3>تصاميم مميزة</h3>
+        <p>أشكال فريدة تناسب كافة الأذواق والشخصيات.</p>
+      </div>
+
+      <div>
+        <i class="fa-solid fa-shield-halved" style="font-size: 24px; color: #df5bd1; margin-bottom: 10px;"></i>
+        <h3>حماية</h3>
+        <p>مقاومة فائقة للصدمات وحماية متكاملة لجهازك.</p>
+      </div>
+    </section>
+
+    <!-- PRODUCTS / FEATURED COLLECTIONS SECTION -->
+    <section class="section" id="products">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow"><span></span> المجموعات المختارة</span>
+          <h2>Featured Collections</h2>
+        </div>
+
+        <div class="product-tools">
+          <input type="text" id="productSearch" placeholder="بحث عن كفر...">
+          <select id="phoneFilter">
+            <option value="all">كل الموديلات</option>
+            <option value="iPhone 15 Pro">iPhone 15 Pro</option>
+            <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
+            <option value="iPhone 14 Pro">iPhone 14 Pro</option>
+            <option value="iPhone 13">iPhone 13</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grid dynamically populated by main.js -->
+      <div class="products-grid" id="productsGrid">
+        <div class="empty" style="grid-column: 1 / -1;">
+          جاري تحميل المنتجات...
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOM SECTION -->
+    <section class="section custom-section" id="custom">
+      <div>
+        <span class="mini-title">صمم بنفسك</span>
+        <h2>كفرات خاصة وحسب الطلب</h2>
+        <p>اختر التصميم الخاص بك أو طلب اسمك ومطبوعاتك المفضلة على كفرات عالية الجودة.</p>
+        <a href="#contact" class="secondary-btn">تواصل لطلب تصميم خاص</a>
+      </div>
+      <div class="custom-shape">
+        <div class="mock-case big">K</div>
+      </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="section about-section" id="about">
+      <span class="mini-title">من نحن</span>
+      <h2>عن Kivra Store</h2>
+      <p>متجر ليبيا الأول المتخصص في تقديم أفضل كفرات وحماية الهواتف الذكية بتصاميم عصرية، جودة عالية، وأسعار مناسبة مع خدمة توصيل سريعة.</p>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="section contact-section" id="contact">
+      <div>
+        <span class="mini-title">تواصل معنا</span>
+        <h2>بنغازي</h2>
+        <p class="contact-description">Benghazi — ليبيا</p>
+      </div>
+      <div class="contact-links">
+        <div class="contact-item">
+          <small>الهاتف</small>
+          <strong>0916872045</strong>
+        </div>
+        <div class="contact-item">
+          <small>واتساب</small>
+          <strong>218916872045+</strong>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+  <footer>
+    <p>© 2026 KIVRA STORE. جميع الحقوق محفوظة.</p>
+    <div class="footer-center">تصاميم وحماية فائقة</div>
+    <div>Benghazi, Libya</div>
+  </footer>
+
+  <!-- =========================================================
+       MODALS & OVERLAYS
+       ========================================================= -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- CART DRAWER -->
+  <aside class="drawer" id="cartDrawer">
+    <div class="drawer-head">
+      <h3>سلة التسوق</h3>
+      <button type="button" id="closeCart">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <div class="empty">السلة فارغة</div>
+    </div>
+    <div class="cart-footer">
+      <div>
+        <span>المجموع:</span>
+        <strong id="cartTotal">0 د.ل</strong>
+      </div>
+      <button type="button" class="primary-btn" id="checkoutBtn">إتمام الطلب</button>
+    </div>
+  </aside>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal" id="productModal">
+    <button type="button" class="modal-close" id="closeModal">&times;</button>
+    <div id="modalContent"></div>
   </div>
 
-</div>
+  <!-- CHECKOUT MODAL -->
+  <div class="modal checkout-modal" id="checkoutModal">
+    <button type="button" class="modal-close" id="closeCheckout">&times;</button>
+    <div class="checkout-content">
+      <h2>إتمام الشراء</h2>
+      <p class="checkout-note">يرجى ملء البيانات التالية لإرسال الطلب عبر واتساب</p>
+      
+      <form id="checkoutForm">
+        <label>
+          الاسم بالكامل *
+          <input type="text" id="customerName" required placeholder="أدخل اسمك الكامل">
+        </label>
+        <label>
+          رقم الهاتف *
+          <input type="tel" id="customerPhone" required placeholder="09X XXXXXXX">
+        </label>
+        <label>
+          العنوان / المدينة والمنطقة *
+          <input type="text" id="customerAddress" required placeholder="مثال: بنغازي - الحدائق">
+        </label>
+        <label>
+          ملاحظات إضافية
+          <textarea id="customerNotes" rows="3" placeholder="أي ملاحظات خاصة بالتوصيل..."></textarea>
+        </label>
 
+        <div class="checkout-summary" id="checkoutSummary"></div>
 
-<!-- ================= SUCCESS ================= -->
-
-<div
-  class="success-toast"
-  id="successToast"
->
-  تم تجهيز الطلب بنجاح
-</div>
-
- <button
-  id="openAdmin"
-  type="button"
-  style="margin:20px;padding:12px 20px;border-radius:10px;cursor:pointer;"
->
-  ＋ إضافة كفر
-</button> 
-  <!-- KIVRA ADMIN -->
-<section id="adminPanel" class="admin-panel" style="display:none;">
-  <div class="admin-header">
-    <h2>إدارة KIVRA</h2>
-    <button id="closeAdmin" type="button">×</button>
+        <button type="submit" class="primary-btn checkout-submit">تأكيد الطلب عبر واتساب</button>
+      </form>
+    </div>
   </div>
 
-  <div class="admin-box">
-    <h3>إضافة كفر جديد</h3>
+  <!-- SUCCESS TOAST -->
+  <div class="success-toast" id="successToast"></div>
 
-    <label>اسم الكفر</label>
-    <input id="adminName" type="text" placeholder="مثال: كفر شفاف">
-
-    <label>السعر</label>
-    <input id="adminPrice" type="number" placeholder="مثال: 35">
-
-    <label>الموديلات</label>
-    <input id="adminPhones" type="text"
-      placeholder="iPhone 15, iPhone 15 Pro, iPhone 16">
-
-    <label>الألوان</label>
-    <input id="adminColors" type="text"
-      placeholder="أسود, أبيض, أزرق">
-
-    <label>الوصف</label>
-    <textarea id="adminDescription"
-      placeholder="وصف الكفر"></textarea>
-
-    <label>صور الكفر</label>
-    <input id="adminImages" type="file" accept="image/*" multiple>
-
-    <button id="addProductBtn" class="primary-btn" type="button">
-      إضافة الكفر
-    </button>
-
-    <p id="adminMessage"></p>
-  </div>
-</section>
-
-<script src="script.js"></script>
-
+  <!-- External JS -->
+  <script src="main.js"></script>
 </body>
 </html>
