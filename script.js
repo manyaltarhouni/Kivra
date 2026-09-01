@@ -1,6 +1,6 @@
 /* =========================================================
    KIVRA STORE
-   JAVASCRIPT
+   DATABASE VERSION
    ========================================================= */
 
 /* =========================================================
@@ -12,7 +12,6 @@ const SUPABASE_URL =
 
 const SUPABASE_ANON_KEY =
   "sb_publishable_uQk-bxeERNR9X-QLoVPqSQ_rdBIp5Cv";
-
 
 /* =========================================================
    SUPABASE CLIENT
@@ -27,7 +26,6 @@ supabaseScript.onload = initStore;
 
 document.head.appendChild(supabaseScript);
 
-
 /* =========================================================
    STORE
    ========================================================= */
@@ -37,7 +35,6 @@ const STORE = {
   phone: "0916872045",
   whatsapp: "218916872045"
 };
-
 
 /* =========================================================
    VARIABLES
@@ -54,23 +51,23 @@ let selectedProduct = null;
 let selectedPhone = null;
 let selectedColor = null;
 
-
 /* =========================================================
-   ELEMENTS
+   ELEMENT HELPER
    ========================================================= */
 
 const $ = selector =>
   document.querySelector(selector);
-
-const grid =
-  $("#productsGrid");
-
 
 /* =========================================================
    INIT
    ========================================================= */
 
 async function initStore() {
+
+  if (!window.supabase) {
+    showDatabaseError("تعذر تشغيل قاعدة البيانات.");
+    return;
+  }
 
   supabase =
     window.supabase.createClient(
@@ -83,12 +80,13 @@ async function initStore() {
   setupRealtime();
 }
 
-
 /* =========================================================
    DATABASE ERROR
    ========================================================= */
 
 function showDatabaseError(message) {
+
+  const grid = $("#productsGrid");
 
   if (!grid) return;
 
@@ -102,12 +100,13 @@ function showDatabaseError(message) {
   `;
 }
 
-
 /* =========================================================
    LOAD PRODUCTS
    ========================================================= */
 
 async function loadProducts() {
+
+  if (!supabase) return;
 
   const {
     data,
@@ -139,12 +138,13 @@ async function loadProducts() {
   renderProducts();
 }
 
-
 /* =========================================================
    REALTIME
    ========================================================= */
 
 function setupRealtime() {
+
+  if (!supabase) return;
 
   supabase
     .channel("kivra-products")
@@ -155,15 +155,12 @@ function setupRealtime() {
         schema: "public",
         table: "products"
       },
-      async () => {
-
-        await loadProducts();
-
+      () => {
+        loadProducts();
       }
     )
     .subscribe();
 }
-
 
 /* =========================================================
    COLORS
@@ -189,20 +186,18 @@ function getColorStyle(color) {
   return colors[color] || "#777";
 }
 
-
 /* =========================================================
    RENDER PRODUCTS
    ========================================================= */
 
 function renderProducts() {
 
+  const grid = $("#productsGrid");
+
   if (!grid) return;
 
-  const phoneElement =
-    $("#phoneFilter");
-
-  const searchElement =
-    $("#productSearch");
+  const phoneElement = $("#phoneFilter");
+  const searchElement = $("#productSearch");
 
   const phone =
     phoneElement
@@ -212,8 +207,8 @@ function renderProducts() {
   const search =
     searchElement
       ? searchElement.value
-          .trim()
-          .toLowerCase()
+        .trim()
+        .toLowerCase()
       : "";
 
   const filteredProducts =
@@ -237,12 +232,12 @@ function renderProducts() {
           .toLowerCase();
 
       const searchMatch =
+        !search ||
         name.includes(search) ||
         collection.includes(search);
 
       return phoneMatch && searchMatch;
     });
-
 
   if (!filteredProducts.length) {
 
@@ -257,7 +252,6 @@ function renderProducts() {
 
     return;
   }
-
 
   grid.innerHTML =
     filteredProducts
@@ -282,13 +276,12 @@ function renderProducts() {
             .join("");
 
         const image =
-          product.image_url;
-
+          product.image_url || "";
 
         return `
           <article
             class="product-card"
-            onclick="openProduct('${escapeHTML(product.id)}')"
+            data-product-id="${escapeHTML(product.id)}"
           >
 
             <div
@@ -314,7 +307,6 @@ function renderProducts() {
               }
 
             </div>
-
 
             <div class="product-info">
 
@@ -346,8 +338,24 @@ function renderProducts() {
         `;
       })
       .join("");
-}
 
+  grid
+    .querySelectorAll(".product-card")
+    .forEach(card => {
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          openProduct(
+            card.dataset.productId
+          );
+
+        }
+      );
+
+    });
+}
 
 /* =========================================================
    OPEN PRODUCT
@@ -381,19 +389,21 @@ function openProduct(id) {
 
   renderModal();
 
-  $("#productModal")
-    .classList
-    .add("open");
+  const modal = $("#productModal");
+  const overlay = $("#overlay");
 
-  $("#overlay")
-    .classList
-    .add("open");
+  if (modal) {
+    modal.classList.add("open");
+  }
+
+  if (overlay) {
+    overlay.classList.add("open");
+  }
 
   document.body.classList.add(
     "modal-open"
   );
 }
-
 
 /* =========================================================
    PRODUCT MODAL
@@ -417,17 +427,21 @@ function renderModal() {
       : [];
 
   const image =
-    product.image_url;
+    product.image_url || "";
 
+  const modalContent =
+    $("#modalContent");
 
-  $("#modalContent").innerHTML = `
+  if (!modalContent) return;
+
+  modalContent.innerHTML = `
 
     <div class="modal-product">
 
       <div
-        class="modal-art art-${
-          escapeHTML(product.theme || "black")
-        }"
+        class="modal-art art-${escapeHTML(
+          product.theme || "black"
+        )}"
       >
 
         ${
@@ -450,11 +464,12 @@ function renderModal() {
 
       </div>
 
-
       <div class="modal-details">
 
         <span class="mini-title">
-          ${escapeHTML(product.collection || "")}
+          ${escapeHTML(
+            product.collection || ""
+          )}
         </span>
 
         <h2>
@@ -466,30 +481,26 @@ function renderModal() {
           د.ل
         </span>
 
-
         <div class="option-title">
           اختر موديل iPhone
         </div>
-
 
         <div class="options">
 
           ${
             phones.length
               ? phones.map(phone => `
-
-                <button
-                  class="option ${
-                    phone === selectedPhone
-                      ? "selected"
-                      : ""
-                  }"
-                  onclick="selectPhone(${JSON.stringify(phone)})"
-                >
-                  ${escapeHTML(phone)}
-                </button>
-
-              `).join("")
+                  <button
+                    class="option ${
+                      phone === selectedPhone
+                        ? "selected"
+                        : ""
+                    }"
+                    data-phone="${escapeHTML(phone)}"
+                  >
+                    ${escapeHTML(phone)}
+                  </button>
+                `).join("")
               : `
                 <span class="empty">
                   لا توجد موديلات محددة.
@@ -499,30 +510,26 @@ function renderModal() {
 
         </div>
 
-
         <div class="option-title">
           اختر اللون
         </div>
-
 
         <div class="options">
 
           ${
             colors.length
               ? colors.map(color => `
-
-                <button
-                  class="option ${
-                    color === selectedColor
-                      ? "selected"
-                      : ""
-                  }"
-                  onclick="selectColor(${JSON.stringify(color)})"
-                >
-                  ${escapeHTML(color)}
-                </button>
-
-              `).join("")
+                  <button
+                    class="option ${
+                      color === selectedColor
+                        ? "selected"
+                        : ""
+                    }"
+                    data-color="${escapeHTML(color)}"
+                  >
+                    ${escapeHTML(color)}
+                  </button>
+                `).join("")
               : `
                 <span class="empty">
                   لا توجد ألوان محددة.
@@ -532,10 +539,9 @@ function renderModal() {
 
         </div>
 
-
         <button
           class="primary-btn add-btn"
-          onclick="addToCart()"
+          id="modalAddToCart"
         >
           أضف إلى السلة
           <span>←</span>
@@ -544,33 +550,57 @@ function renderModal() {
       </div>
 
     </div>
+
   `;
+
+  modalContent
+    .querySelectorAll("[data-phone]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          selectedPhone =
+            button.dataset.phone;
+
+          renderModal();
+
+        }
+      );
+
+    });
+
+  modalContent
+    .querySelectorAll("[data-color]")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          selectedColor =
+            button.dataset.color;
+
+          renderModal();
+
+        }
+      );
+
+    });
+
+  const addButton =
+    $("#modalAddToCart");
+
+  if (addButton) {
+
+    addButton.addEventListener(
+      "click",
+      addToCart
+    );
+
+  }
 }
-
-
-/* =========================================================
-   SELECT PHONE
-   ========================================================= */
-
-function selectPhone(phone) {
-
-  selectedPhone = phone;
-
-  renderModal();
-}
-
-
-/* =========================================================
-   SELECT COLOR
-   ========================================================= */
-
-function selectColor(color) {
-
-  selectedColor = color;
-
-  renderModal();
-}
-
 
 /* =========================================================
    ADD TO CART
@@ -591,18 +621,13 @@ function addToCart() {
     return;
   }
 
-
   const existingItem =
     cart.find(item =>
-
       String(item.productId) ===
         String(selectedProduct.id) &&
-
       item.phone === selectedPhone &&
-
       item.color === selectedColor
     );
-
 
   if (existingItem) {
 
@@ -630,11 +655,13 @@ function addToCart() {
       price:
         Number(selectedProduct.price || 0),
 
+      image:
+        selectedProduct.image_url || "",
+
       quantity: 1
 
     });
   }
-
 
   saveCart();
 
@@ -642,7 +669,6 @@ function addToCart() {
 
   openCart();
 }
-
 
 /* =========================================================
    SAVE CART
@@ -660,7 +686,6 @@ function saveCart() {
   updateCartCount();
 }
 
-
 /* =========================================================
    CART COUNT
    ========================================================= */
@@ -670,20 +695,17 @@ function updateCartCount() {
   const count =
     cart.reduce(
       (total, item) =>
-        total +
-        (item.quantity || 1),
+        total + Number(item.quantity || 1),
       0
     );
 
-
-  const counter =
+  const element =
     $("#cartCount");
 
-  if (counter) {
-    counter.textContent = count;
+  if (element) {
+    element.textContent = count;
   }
 }
-
 
 /* =========================================================
    RENDER CART
@@ -696,7 +718,6 @@ function renderCart() {
 
   if (!cartItems) return;
 
-
   if (!cart.length) {
 
     cartItems.innerHTML = `
@@ -705,28 +726,42 @@ function renderCart() {
       </div>
     `;
 
-    if ($("#cartTotal")) {
-      $("#cartTotal").textContent =
+    const totalElement =
+      $("#cartTotal");
+
+    if (totalElement) {
+      totalElement.textContent =
         "0 د.ل";
     }
 
     return;
   }
 
-
   cartItems.innerHTML =
     cart.map(
       (item, index) => {
 
         const quantity =
-          item.quantity || 1;
+          Number(item.quantity || 1);
 
+        const itemImage =
+          item.image || "";
 
         return `
-
           <div class="cart-row">
 
-            <div class="cart-thumb"></div>
+            <div
+              class="cart-thumb"
+              ${
+                itemImage
+                  ? `style="
+                      background-image:url('${escapeHTML(itemImage)}');
+                      background-size:cover;
+                      background-position:center;
+                    "`
+                  : ""
+              }
+            ></div>
 
             <div class="cart-row-content">
 
@@ -752,7 +787,8 @@ function renderCart() {
 
                 <button
                   class="option"
-                  onclick="decreaseQuantity(${index})"
+                  data-action="decrease"
+                  data-index="${index}"
                 >
                   −
                 </button>
@@ -763,7 +799,8 @@ function renderCart() {
 
                 <button
                   class="option"
-                  onclick="increaseQuantity(${index})"
+                  data-action="increase"
+                  data-index="${index}"
                 >
                   +
                 </button>
@@ -774,7 +811,9 @@ function renderCart() {
 
             <button
               class="icon-btn cart-delete"
-              onclick="removeCart(${index})"
+              data-action="remove"
+              data-index="${index}"
+              aria-label="حذف"
             >
               ×
             </button>
@@ -784,24 +823,56 @@ function renderCart() {
       }
     ).join("");
 
+  cartItems
+    .querySelectorAll("[data-action]")
+    .forEach(button => {
+
+      const index =
+        Number(button.dataset.index);
+
+      const action =
+        button.dataset.action;
+
+      button.addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          if (action === "increase") {
+            increaseQuantity(index);
+          }
+
+          if (action === "decrease") {
+            decreaseQuantity(index);
+          }
+
+          if (action === "remove") {
+            removeCart(index);
+          }
+
+        }
+      );
+
+    });
 
   const total =
     cart.reduce(
       (sum, item) =>
         sum +
         Number(item.price || 0) *
-        (item.quantity || 1),
+        Number(item.quantity || 1),
       0
     );
 
+  const totalElement =
+    $("#cartTotal");
 
-  if ($("#cartTotal")) {
-
-    $("#cartTotal").textContent =
+  if (totalElement) {
+    totalElement.textContent =
       `${total} د.ل`;
   }
 }
-
 
 /* =========================================================
    QUANTITY
@@ -812,19 +883,17 @@ function increaseQuantity(index) {
   if (!cart[index]) return;
 
   cart[index].quantity =
-    (cart[index].quantity || 1) + 1;
+    Number(cart[index].quantity || 1) + 1;
 
   saveCart();
 }
-
 
 function decreaseQuantity(index) {
 
   if (!cart[index]) return;
 
   const quantity =
-    cart[index].quantity || 1;
-
+    Number(cart[index].quantity || 1);
 
   if (quantity > 1) {
 
@@ -834,12 +903,11 @@ function decreaseQuantity(index) {
   } else {
 
     cart.splice(index, 1);
-  }
 
+  }
 
   saveCart();
 }
-
 
 function removeCart(index) {
 
@@ -850,62 +918,83 @@ function removeCart(index) {
   saveCart();
 }
 
-
 /* =========================================================
-   CART
+   OPEN CART
    ========================================================= */
 
 function openCart() {
 
-  $("#cartDrawer")
-    .classList
-    .add("open");
+  const drawer =
+    $("#cartDrawer");
 
-  $("#overlay")
-    .classList
-    .add("open");
+  const overlay =
+    $("#overlay");
+
+  if (drawer) {
+    drawer.classList.add("open");
+  }
+
+  if (overlay) {
+    overlay.classList.add("open");
+  }
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
+  renderCart();
 }
 
+/* =========================================================
+   CLOSE EVERYTHING
+   ========================================================= */
 
 function closeAll() {
 
-  $("#cartDrawer")
-    .classList
-    .remove("open");
+  [
+    "#cartDrawer",
+    "#productModal",
+    "#checkoutModal",
+    "#overlay"
+  ].forEach(selector => {
 
-  $("#productModal")
-    .classList
-    .remove("open");
+    const element = $(selector);
 
-  $("#checkoutModal")
-    .classList
-    .remove("open");
+    if (element) {
+      element.classList.remove("open");
+    }
 
-  $("#overlay")
-    .classList
-    .remove("open");
+  });
 
   document.body.classList.remove(
     "modal-open"
   );
 }
 
+/* =========================================================
+   CLOSE PRODUCT
+   ========================================================= */
 
 function closeModal() {
 
-  $("#productModal")
-    .classList
-    .remove("open");
+  const modal =
+    $("#productModal");
 
-  $("#overlay")
-    .classList
-    .remove("open");
+  const overlay =
+    $("#overlay");
+
+  if (modal) {
+    modal.classList.remove("open");
+  }
+
+  if (overlay) {
+    overlay.classList.remove("open");
+  }
 
   document.body.classList.remove(
     "modal-open"
   );
 }
-
 
 /* =========================================================
    SEARCH
@@ -921,15 +1010,15 @@ if (searchBtn) {
     () => {
 
       const productsSection =
-        document.querySelector("#products");
+        $("#products");
 
       if (productsSection) {
 
         productsSection.scrollIntoView({
           behavior: "smooth"
         });
-      }
 
+      }
 
       setTimeout(() => {
 
@@ -941,10 +1030,11 @@ if (searchBtn) {
         }
 
       }, 500);
+
     }
   );
-}
 
+}
 
 /* =========================================================
    FILTER
@@ -959,8 +1049,8 @@ if (phoneFilter) {
     "change",
     renderProducts
   );
-}
 
+}
 
 const productSearch =
   $("#productSearch");
@@ -971,8 +1061,8 @@ if (productSearch) {
     "input",
     renderProducts
   );
-}
 
+}
 
 /* =========================================================
    CART BUTTON
@@ -987,36 +1077,44 @@ if (cartBtn) {
     "click",
     openCart
   );
+
 }
 
-
 /* =========================================================
-   CLOSE BUTTONS
+   CLOSE CART
    ========================================================= */
 
-const closeCartBtn =
+const closeCart =
   $("#closeCart");
 
-if (closeCartBtn) {
+if (closeCart) {
 
-  closeCartBtn.addEventListener(
+  closeCart.addEventListener(
     "click",
     closeAll
   );
+
 }
 
+/* =========================================================
+   CLOSE PRODUCT
+   ========================================================= */
 
-const closeModalBtn =
+const closeProduct =
   $("#closeModal");
 
-if (closeModalBtn) {
+if (closeProduct) {
 
-  closeModalBtn.addEventListener(
+  closeProduct.addEventListener(
     "click",
     closeModal
   );
+
 }
 
+/* =========================================================
+   OVERLAY
+   ========================================================= */
 
 const overlay =
   $("#overlay");
@@ -1027,8 +1125,8 @@ if (overlay) {
     "click",
     closeAll
   );
-}
 
+}
 
 /* =========================================================
    MOBILE MENU
@@ -1047,16 +1145,24 @@ if (menuBtn) {
         "active"
       );
 
-      $("#mainNav")
-        .classList
-        .toggle("mobile-open");
+      const nav =
+        $("#mainNav");
+
+      if (nav) {
+
+        nav.classList.toggle(
+          "mobile-open"
+        );
+
+      }
+
     }
   );
+
 }
 
-
 /* =========================================================
-   CLOSE MOBILE MENU
+   MOBILE MENU LINKS
    ========================================================= */
 
 document
@@ -1075,11 +1181,13 @@ document
           nav.classList.remove(
             "mobile-open"
           );
+
         }
+
       }
     );
-  });
 
+  });
 
 /* =========================================================
    CHECKOUT
@@ -1094,8 +1202,8 @@ if (checkoutBtn) {
     "click",
     openCheckout
   );
-}
 
+}
 
 function openCheckout() {
 
@@ -1106,23 +1214,26 @@ function openCheckout() {
     return;
   }
 
-
   renderCheckoutSummary();
 
+  const modal =
+    $("#checkoutModal");
 
-  $("#checkoutModal")
-    .classList
-    .add("open");
+  const overlay =
+    $("#overlay");
 
-  $("#overlay")
-    .classList
-    .add("open");
+  if (modal) {
+    modal.classList.add("open");
+  }
+
+  if (overlay) {
+    overlay.classList.add("open");
+  }
 
   document.body.classList.add(
     "modal-open"
   );
 }
-
 
 /* =========================================================
    CHECKOUT SUMMARY
@@ -1135,16 +1246,14 @@ function renderCheckoutSummary() {
 
   if (!summary) return;
 
-
   const total =
     cart.reduce(
       (sum, item) =>
         sum +
         Number(item.price || 0) *
-        (item.quantity || 1),
+        Number(item.quantity || 1),
       0
     );
-
 
   summary.innerHTML = `
 
@@ -1162,13 +1271,13 @@ function renderCheckoutSummary() {
           ${escapeHTML(item.phone)}
           —
           ${escapeHTML(item.color)}
-          × ${item.quantity || 1}
+          × ${Number(item.quantity || 1)}
         </span>
 
         <strong>
           ${
             Number(item.price || 0) *
-            (item.quantity || 1)
+            Number(item.quantity || 1)
           }
           د.ل
         </strong>
@@ -1176,7 +1285,6 @@ function renderCheckoutSummary() {
       </div>
 
     `).join("")}
-
 
     <div class="checkout-total">
 
@@ -1193,7 +1301,6 @@ function renderCheckoutSummary() {
   `;
 }
 
-
 /* =========================================================
    CLOSE CHECKOUT
    ========================================================= */
@@ -1207,8 +1314,8 @@ if (closeCheckout) {
     "click",
     closeAll
   );
-}
 
+}
 
 /* =========================================================
    SUBMIT ORDER
@@ -1225,7 +1332,6 @@ if (checkoutForm) {
 
       event.preventDefault();
 
-
       if (!cart.length) {
 
         alert("السلة فارغة.");
@@ -1233,33 +1339,19 @@ if (checkoutForm) {
         return;
       }
 
-
       const name =
-        $("#customerName")
-          .value
-          .trim();
+        $("#customerName")?.value.trim();
 
       const phone =
-        $("#customerPhone")
-          .value
-          .trim();
+        $("#customerPhone")?.value.trim();
 
       const address =
-        $("#customerAddress")
-          .value
-          .trim();
+        $("#customerAddress")?.value.trim();
 
       const notes =
-        $("#customerNotes")
-          .value
-          .trim();
+        $("#customerNotes")?.value.trim();
 
-
-      if (
-        !name ||
-        !phone ||
-        !address
-      ) {
+      if (!name || !phone || !address) {
 
         alert(
           "يرجى إدخال جميع البيانات المطلوبة."
@@ -1268,16 +1360,14 @@ if (checkoutForm) {
         return;
       }
 
-
       const total =
         cart.reduce(
           (sum, item) =>
             sum +
             Number(item.price || 0) *
-            (item.quantity || 1),
+            Number(item.quantity || 1),
           0
         );
-
 
       let message =
 
@@ -1297,7 +1387,6 @@ ${address}
 📦 تفاصيل الطلب:
 `;
 
-
       cart.forEach(
         (item, index) => {
 
@@ -1309,12 +1398,12 @@ ${index + 1}. ${item.name}
 • الكمية: ${item.quantity || 1}
 • السعر: ${
   Number(item.price || 0) *
-  (item.quantity || 1)
+  Number(item.quantity || 1)
 } د.ل
 `;
+
         }
       );
-
 
       message += `
 
@@ -1324,7 +1413,6 @@ ${index + 1}. ${item.name}
 ${total} د.ل
 `;
 
-
       if (notes) {
 
         message += `
@@ -1332,19 +1420,17 @@ ${total} د.ل
 📝 ملاحظات:
 ${notes}
 `;
-      }
 
+      }
 
       message += `
 
 شكراً لاختياركم KIVRA Store.`;
 
-
       const whatsappURL =
         `https://wa.me/${STORE.whatsapp}?text=${
           encodeURIComponent(message)
         }`;
-
 
       localStorage.setItem(
         "kivra_last_order",
@@ -1360,12 +1446,10 @@ ${notes}
         })
       );
 
-
       window.open(
         whatsappURL,
         "_blank"
       );
-
 
       cart = [];
 
@@ -1381,8 +1465,8 @@ ${notes}
 
     }
   );
-}
 
+}
 
 /* =========================================================
    TOAST
@@ -1398,16 +1482,18 @@ function showToast(message) {
   toast.textContent =
     message;
 
-  toast.classList.add("show");
-
+  toast.classList.add(
+    "show"
+  );
 
   setTimeout(() => {
 
-    toast.classList.remove("show");
+    toast.classList.remove(
+      "show"
+    );
 
   }, 3000);
 }
-
 
 /* =========================================================
    ACTIVE NAV
@@ -1418,19 +1504,16 @@ const sections =
     "main section[id]"
   );
 
-
 window.addEventListener(
   "scroll",
   () => {
 
     let current = "home";
 
-
     sections.forEach(section => {
 
       const sectionTop =
         section.offsetTop - 120;
-
 
       if (
         window.scrollY >= sectionTop
@@ -1438,9 +1521,10 @@ window.addEventListener(
 
         current =
           section.id;
-      }
-    });
 
+      }
+
+    });
 
     document
       .querySelectorAll(".nav a")
@@ -1450,7 +1534,6 @@ window.addEventListener(
           "active"
         );
 
-
         if (
           link.getAttribute("href") ===
           `#${current}`
@@ -1459,13 +1542,13 @@ window.addEventListener(
           link.classList.add(
             "active"
           );
+
         }
 
       });
 
   }
 );
-
 
 /* =========================================================
    ESCAPE
@@ -1484,7 +1567,6 @@ document.addEventListener(
   }
 );
 
-
 /* =========================================================
    SECURITY
    ========================================================= */
@@ -1500,71 +1582,64 @@ function escapeHTML(value) {
 
 }
 
-
 /* =========================================================
-   ADMIN - ADD PRODUCTS
+   INITIAL CART
    ========================================================= */
 
+renderCart();
+updateCartCount();
+
+/* =========================================================
+   KIVRA ADMIN
+   ========================================================= */
+
+const adminPanel =
+  $("#adminPanel");
+
 const addProductBtn =
-  document.querySelector("#addProductBtn");
+  $("#addProductBtn");
 
 const adminMessage =
-  document.querySelector("#adminMessage");
+  $("#adminMessage");
 
+/* =========================================================
+   ADD PRODUCT
+   ========================================================= */
 
 async function addKivraProduct() {
 
   if (!supabase) {
 
-    alert(
-      "قاعدة البيانات غير متصلة."
-    );
+    if (adminMessage) {
+
+      adminMessage.textContent =
+        "قاعدة البيانات غير متصلة.";
+
+    }
 
     return;
   }
 
-
   const name =
-    document
-      .querySelector("#adminName")
-      .value
-      .trim();
-
+    $("#adminName")?.value.trim();
 
   const price =
-    Number(
-      document
-        .querySelector("#adminPrice")
-        .value
-    );
-
+    Number($("#adminPrice")?.value);
 
   const phonesText =
-    document
-      .querySelector("#adminPhones")
-      .value
-      .trim();
-
+    $("#adminPhones")?.value.trim();
 
   const colorsText =
-    document
-      .querySelector("#adminColors")
-      .value
-      .trim();
-
+    $("#adminColors")?.value.trim();
 
   const description =
-    document
-      .querySelector("#adminDescription")
-      .value
-      .trim();
+    $("#adminDescription")?.value.trim();
 
+  const imageInput =
+    $("#adminImages");
 
   const images =
-    document
-      .querySelector("#adminImages")
-      .files;
-
+    imageInput?.files || [];
 
   if (
     !name ||
@@ -1574,155 +1649,229 @@ async function addKivraProduct() {
     !images.length
   ) {
 
-    adminMessage.textContent =
-      "يرجى إدخال الاسم والسعر والموديلات والألوان والصور.";
+    if (adminMessage) {
+
+      adminMessage.textContent =
+        "يرجى إدخال الاسم والسعر والموديلات والألوان والصور.";
+
+    }
 
     return;
   }
 
+  if (adminMessage) {
 
-  adminMessage.textContent =
-    "جاري إضافة الكفر...";
+    adminMessage.textContent =
+      "جاري إضافة الكفر...";
 
+  }
 
-  const phones =
-    phonesText
-      .split(",")
-      .map(x => x.trim())
-      .filter(Boolean);
+  try {
 
+    const phones =
+      phonesText
+        .split(",")
+        .map(x => x.trim())
+        .filter(Boolean);
 
-  const colors =
-    colorsText
-      .split(",")
-      .map(x => x.trim())
-      .filter(Boolean);
+    const colors =
+      colorsText
+        .split(",")
+        .map(x => x.trim())
+        .filter(Boolean);
 
+    const imageUrls = [];
 
-  const file =
-    images[0];
+    /* =====================================================
+       UPLOAD ALL IMAGES
+       ===================================================== */
 
+    for (
+      let i = 0;
+      i < images.length;
+      i++
+    ) {
 
-  const fileName =
-    `${Date.now()}-${file.name.replace(
-      /[^a-zA-Z0-9._-]/g,
-      ""
-    )}`;
+      const file =
+        images[i];
 
+      const safeName =
+        file.name
+          .replace(
+            /[^a-zA-Z0-9._-]/g,
+            ""
+          );
 
-  const {
-    error: uploadError
-  } =
-    await supabase.storage
-      .from("kivra-images")
-      .upload(
-        fileName,
-        file
+      const fileName =
+        `${Date.now()}-${i}-${Math.random()
+          .toString(36)
+          .substring(2, 8)}-${safeName}`;
+
+      const {
+        error: uploadError
+      } =
+        await supabase.storage
+          .from("kivra-images")
+          .upload(
+            fileName,
+            file
+          );
+
+      if (uploadError) {
+
+        console.error(
+          "Upload error:",
+          uploadError
+        );
+
+        throw new Error(
+          "UPLOAD_ERROR"
+        );
+      }
+
+      const {
+        data: publicData
+      } =
+        supabase.storage
+          .from("kivra-images")
+          .getPublicUrl(
+            fileName
+          );
+
+      if (
+        publicData &&
+        publicData.publicUrl
+      ) {
+
+        imageUrls.push(
+          publicData.publicUrl
+        );
+
+      }
+
+    }
+
+    /* =====================================================
+       INSERT PRODUCT
+       ===================================================== */
+
+    const {
+      error: insertError
+    } =
+      await supabase
+        .from("products")
+        .insert({
+
+          name: name,
+
+          price: price,
+
+          phones: phones,
+
+          colors: colors,
+
+          description:
+            description || "",
+
+          image_url:
+            imageUrls[0] || "",
+
+          collection:
+            "iPhone",
+
+          theme:
+            "black",
+
+          active:
+            true
+
+        });
+
+    if (insertError) {
+
+      console.error(
+        "Insert error:",
+        insertError
       );
 
-
-  if (uploadError) {
-
-    console.error(uploadError);
-
-    adminMessage.textContent =
-      "حدث خطأ أثناء رفع الصورة.";
-
-    return;
-  }
-
-
-  const {
-    data: publicData
-  } =
-    supabase.storage
-      .from("kivra-images")
-      .getPublicUrl(
-        fileName
+      throw new Error(
+        "INSERT_ERROR"
       );
+    }
 
+    /* =====================================================
+       SUCCESS
+       ===================================================== */
 
-  const imageUrl =
-    publicData.publicUrl;
+    if (adminMessage) {
 
+      adminMessage.textContent =
+        "تمت إضافة الكفر بنجاح ✅";
 
-  const {
-    error
-  } =
-    await supabase
-      .from("products")
-      .insert({
+    }
 
-        name,
+    const fields = [
+      "#adminName",
+      "#adminPrice",
+      "#adminPhones",
+      "#adminColors",
+      "#adminDescription"
+    ];
 
-        price,
+    fields.forEach(selector => {
 
-        phones,
+      const field = $(selector);
 
-        colors,
+      if (field) {
+        field.value = "";
+      }
 
-        description,
+    });
 
-        image_url:
-          imageUrl,
+    if (imageInput) {
+      imageInput.value = "";
+    }
 
-        collection:
-          "iPhone",
+    /*
+      تحديث الموقع فورًا
+      بدون إعادة تشغيل الصفحة
+    */
 
-        theme:
-          "black",
+    await loadProducts();
 
-        active:
-          true
+  } catch (error) {
 
-      });
+    console.error(
+      "KIVRA ADMIN ERROR:",
+      error
+    );
 
+    if (adminMessage) {
 
-  if (error) {
+      if (
+        error.message ===
+        "UPLOAD_ERROR"
+      ) {
 
-    console.error(error);
+        adminMessage.textContent =
+          "حدث خطأ أثناء رفع الصورة.";
 
-    adminMessage.textContent =
-      "حدث خطأ أثناء إضافة الكفر.";
+      } else {
 
-    return;
+        adminMessage.textContent =
+          "حدث خطأ أثناء إضافة الكفر.";
+
+      }
+
+    }
+
   }
 
-
-  adminMessage.textContent =
-    "تمت إضافة الكفر بنجاح ✅";
-
-
-  document.querySelector(
-    "#adminName"
-  ).value = "";
-
-
-  document.querySelector(
-    "#adminPrice"
-  ).value = "";
-
-
-  document.querySelector(
-    "#adminPhones"
-  ).value = "";
-
-
-  document.querySelector(
-    "#adminColors"
-  ).value = "";
-
-
-  document.querySelector(
-    "#adminDescription"
-  ).value = "";
-
-
-  document.querySelector(
-    "#adminImages"
-  ).value = "";
 }
 
+/* =========================================================
+   ADMIN BUTTON
+   ========================================================= */
 
 if (addProductBtn) {
 
@@ -1730,13 +1879,5 @@ if (addProductBtn) {
     "click",
     addKivraProduct
   );
+
 }
-
-
-/* =========================================================
-   INITIAL CART
-   ========================================================= */
-
-renderCart();
-
-updateCartCount();
