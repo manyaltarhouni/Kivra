@@ -17,9 +17,9 @@
    SUPABASE CONFIG
    ========================================================= */
 
-const SUPABASE_URL = "ضع_PROJECT_URL_هنا";
+const SUPABASE_URL = "https://dwqsyyikqyedbvscearv.supabase.co";
 
-const SUPABASE_ANON_KEY = "ضع_PUBLISHABLE_KEY_هنا";
+const SUPABASE_ANON_KEY = "sb_publishable_uQk-bxeERNR9X-QLoVPqSQ_rdBIp5Cv";
 
 
 /* =========================================================
